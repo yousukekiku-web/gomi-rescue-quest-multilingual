@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
+<title>고미 구조 퀘스트 | 최종 결과</title>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167x167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ゴミレスキュー">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#ffb300; --purple:#7653c8; --purpled:#4a287d; --ink:#2a3a4a;
+  --blue:#2a72d4; --teal:#0f8f83;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'BIZ UDPGothic','Noto Sans JP',sans-serif;color:var(--ink);}
+body{background:linear-gradient(160deg,#2a2140,#4a3672);display:flex;align-items:center;justify-content:center;}
+
+#app{width:100%;max-width:460px;height:100%;max-height:900px;position:relative;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+@media(min-width:521px){#app{border-radius:28px;height:92vh;}}
+
+.home-link{position:fixed;top:max(env(safe-area-inset-top),10px);left:12px;z-index:999;
+  width:44px;height:44px;border-radius:50%;background:#fff;border:none;
+  font-size:17px;box-shadow:0 0 0 2px #17302c,0 3px 10px rgba(0,0,0,.25);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;color:inherit;}
+.home-link:active{transform:scale(.9);}
+
+/* ===== incomplete notice ===== */
+.notice{padding:40px 24px;text-align:center;}
+.notice .em{font-size:52px;margin-bottom:10px;}
+.notice h2{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:20px;color:var(--purpled);margin-bottom:10px;}
+.notice p{font-size:12.5px;font-weight:700;color:#2f2a45;line-height:1.8;margin-bottom:20px;}
+.notice a{display:inline-block;background:#5b3aa8;color:#fff;
+  text-decoration:none;font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:16px;padding:14px 32px;border-radius:40px;
+  box-shadow:0 0 0 2px #2e1a63,0 5px 0 2px #2e1a63;}
+
+/* ===== ending ===== */
+.ending{background:linear-gradient(160deg,#2a2140,#4a3672);color:#fff;text-align:center;
+  padding:max(env(safe-area-inset-top),26px) 22px 22px;}
+.end-emoji{font-size:44px;}
+.end-title{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:20px;color:#ffe27a;margin:4px 0 10px;text-shadow:0 2px 0 rgba(0,0,0,.3);}
+.end-copy{font-size:12px;font-weight:700;line-height:1.9;color:#fff;max-width:360px;margin:0 auto;}
+.end-copy b{color:#ffe27a;}
+
+/* ===== character card ===== */
+.charcard{margin:18px 18px 6px;background:linear-gradient(160deg,#fff,#f6f0ff);border-radius:22px;padding:26px 20px;
+  text-align:center;box-shadow:0 10px 26px rgba(60,30,110,.25);border:3px solid #e6d9fa;}
+.charcard .badge{display:inline-block;background:linear-gradient(135deg,var(--purpled),var(--purple));color:#fff;
+  font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:11px;padding:4px 16px;border-radius:20px;letter-spacing:.1em;margin-bottom:12px;}
+.char-visual{display:flex;align-items:center;justify-content:center;width:184px;height:230px;margin:0 auto 8px;
+  border-radius:20px;overflow:hidden;box-shadow:0 10px 22px rgba(60,30,110,.28);background:#f6f0ff;}
+.char-visual .emoji-fallback{font-size:96px;line-height:1;}
+.char-visual .char-icon-img{width:100%;height:100%;object-fit:cover;display:block;}
+.charcard .title{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:clamp(22px,7vw,28px);color:var(--purpled);line-height:1.3;}
+.charcard .code{font-family:'Fredoka One','BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP',sans-serif;font-weight:400;font-size:13px;color:#4a287d;letter-spacing:.2em;margin-top:4px;}
+.charcard.rare{background:linear-gradient(160deg,#fff8e0,#ffe9b3);border-color:#ffcf4d;
+  box-shadow:0 0 0 3px #fff, 0 0 0 6px #ffcf4d, 0 12px 30px rgba(200,140,0,.35);animation:rareGlow 2.2s ease-in-out infinite;}
+@keyframes rareGlow{0%,100%{box-shadow:0 0 0 3px #fff,0 0 0 6px #ffcf4d,0 12px 30px rgba(200,140,0,.35);}
+  50%{box-shadow:0 0 0 3px #fff,0 0 0 6px #ffe27a,0 16px 40px rgba(255,180,0,.55);}}
+.badge.rare{background:linear-gradient(135deg,#ff8a00,#ffcf4d);color:#5a3a00;}
+.rare-sub{margin-top:10px;font-size:11.5px;font-weight:700;color:#4d3500;line-height:1.7;
+  background:#fffdf6;border-radius:10px;padding:10px 12px;text-align:left;}
+.stat-lines{margin-top:16px;text-align:left;display:flex;flex-direction:column;gap:8px;}
+.stat-line{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:9px 12px;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.stat-rank{font-family:'Fredoka One','BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP',sans-serif;font-weight:400;font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+.stat-body{flex:1;}
+.stat-cat{font-size:9.5px;font-weight:900;color:#4a3a7a;letter-spacing:.05em;}
+.stat-desc{font-size:12px;font-weight:900;color:#17212b;}
+
+.recap{margin:14px 18px;background:#f4f8fc;border-radius:16px;padding:12px 16px;}
+.recap-title{font-size:11px;font-weight:900;color:#27425c;margin-bottom:8px;}
+.recap-row{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#17212b;padding:5px 0;border-bottom:1px solid #e6edf3;}
+.recap-row:last-child{border:none;}
+.recap-row b{font-family:'Fredoka One','BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP',sans-serif;font-weight:400;color:#1d5bb8;}
+
+/* ===== register ===== */
+.cta-row{padding:6px 18px 26px;}
+.btn-cta{width:100%;padding:17px 12px;border:3px solid #fff;border-radius:40px;background:#0b6b5f;
+  color:#fff;font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:17px;line-height:1.45;cursor:pointer;
+  box-shadow:0 0 0 2px #063d36,0 6px 0 2px #063d36;text-decoration:none;display:block;text-align:center;}
+.btn-cta:active{transform:translateY(4px);box-shadow:0 0 0 2px #063d36,0 2px 0 2px #063d36;}
+.btn-cta .ti-wrap{width:30px;height:30px;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 2px #063d36;}
+.btn-cta .ti-wrap img{width:20px;height:20px;}
+.btn-cta small{display:block;font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-size:12px!important;font-weight:700;margin-top:4px;opacity:1;color:#fff;text-wrap:balance;}
+.btn-home-text{display:block;text-align:center;font-size:12px;font-weight:900;color:#4a287d;text-decoration:underline;margin-top:12px;}
+.gi{width:1.15em;height:1.15em;vertical-align:-.22em;display:inline-block;flex-shrink:0;}
+.home-link .gi,.bgm-btn .gi,.refresh-btn .gi{width:24px;height:24px;vertical-align:0;}
+.notice .em .gi{width:52px;height:52px;vertical-align:0;}
+.end-emoji img{width:100%;max-width:360px;height:auto;display:block;margin:0 auto;border-radius:14px;}
+.ti-wrap{display:inline-flex;width:26px;height:26px;border-radius:50%;background:#fff;align-items:center;justify-content:center;margin-right:6px;vertical-align:-7px;}
+.ti-wrap img{width:18px;height:18px;object-fit:contain;display:block;}
+</style>
+<style id="mud-accessibility-and-type">
+html,body{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif}
+:where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:3px solid #17152b!important;outline-offset:3px!important;box-shadow:0 0 0 5px #fff!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+:where(small,.hero-copy,.sc-desc,.sc-status,.loc-hint,.reg-note,.stat-cat,.recap-title,.rc-name .t,.rc-score small,.rank-name .t,.rank-score small,.hint,.stage-badge){font-size:max(12px,1em)!important}
+:where(.loc-section-label,.loc-block-num,.btn-reset,.rc-empty,.rank-empty,.detail-empty,.btn-home-text,.skip-btn,.sg-skip){font-size:max(12px,1em)!important}
+#scr-game .hud-chip .l{font-size:max(12px,1em)!important}#scr-game .hud-chip .v{font-size:clamp(17px,3.6vh,24px)!important}
+button,a[role="button"]{touch-action:manipulation}
+button,input,select,textarea{font-family:inherit}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="5.5" y="11" width="13" height="9.5" rx="1" fill="#fff3d6"/><path d="M3 11.8 12 3.5l9 8.3z" fill="#e8554e"/><rect x="10" y="14.5" width="4" height="6" rx=".6" fill="#a3703a"/></symbol><symbol id="i-sound-on" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#5aa0f0"/><path d="M15.5 9c1.5 1.7 1.5 4.3 0 6" fill="none"/><path d="M18.2 6.3c3 3.2 3 8.2 0 11.4" fill="none"/></symbol><symbol id="i-sound-off" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#aab4c0"/><path d="M15.8 9.3l5 5.4M20.8 9.3l-5 5.4" fill="none" stroke="#e8554e" stroke-width="2"/></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#8a95a3" stroke-width="2"/><rect x="5" y="11" width="14" height="10" rx="2.2" fill="#f2b630"/><circle cx="12" cy="15.6" r="1.5" fill="#3b2a1a" stroke="none"/><path d="M12 16.5v2" fill="none"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 20.5C5 15.6 3 11.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6c0 3-2 7-9 11.9z" fill="#ee5a6f"/></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="9.6" y="2.2" width="4.8" height="2.6" rx=".8" fill="#8a95a3"/><circle cx="12" cy="13.6" r="7.6" fill="#fff"/><path d="M12 13.6V9" fill="none" stroke-width="1.8"/><path d="M12 13.6l3 1.8" fill="none"/></symbol><symbol id="i-ok" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3.2"/></symbol><symbol id="i-ng" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="3.4"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,2.40 14.70,9.08 21.89,9.59 16.37,14.22 18.11,21.21 12.00,17.40 5.89,21.21 7.63,14.22 2.11,9.59 9.30,9.08" fill="#ffd23f"/></symbol><symbol id="i-warning" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.4 22 20.6H2z" fill="#ffcc33"/><path d="M12 9.6v5" fill="none" stroke-width="1.8"/><circle cx="12" cy="17.6" r=".5" fill="#3b2a1a"/></symbol><symbol id="i-burst" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,1.00 13.85,6.29 18.47,3.10 16.85,8.47 22.46,8.60 18.00,12.00 22.46,15.40 16.85,15.53 18.47,20.90 13.85,17.71 12.00,23.00 10.15,17.71 5.53,20.90 7.15,15.53 1.54,15.40 6.00,12.00 1.54,8.60 7.15,8.47 5.53,3.10 10.15,6.29" fill="#ff8a3d"/><polygon points="12.00,5.80 12.99,8.96 15.64,6.98 14.59,10.12 17.90,10.08 15.20,12.00 17.90,13.92 14.59,13.88 15.64,17.02 12.99,15.04 12.00,18.20 11.01,15.04 8.36,17.02 9.41,13.88 6.10,13.92 8.80,12.00 6.10,10.08 9.41,10.12 8.36,6.98 11.01,8.96" fill="#ffd23f" stroke="none"/></symbol><symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(0 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(45 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(90 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(135 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(180 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(225 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(270 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7" fill="#9aa5b1"/><circle cx="12" cy="12" r="2.6" fill="#fff"/></symbol><symbol id="i-tire" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#444"/><circle cx="12" cy="12" r="4.6" fill="#c8ced6"/><circle cx="12" cy="12" r="1.3" fill="#3b2a1a" stroke="none"/></symbol><symbol id="i-puff" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="8" cy="13.5" r="4.2" fill="#fff" stroke="#9aa5b1"/><circle cx="13.2" cy="10.5" r="5.2" fill="#fff" stroke="#9aa5b1"/><circle cx="17.2" cy="14.4" r="4" fill="#fff" stroke="#9aa5b1"/><circle cx="8" cy="13.5" r="3.6" fill="#fff" stroke="none"/><circle cx="13.2" cy="10.5" r="4.6" fill="#fff" stroke="none"/><circle cx="17.2" cy="14.4" r="3.4" fill="#fff" stroke="none"/><rect x="8" y="14" width="9.4" height="4.2" fill="#fff" stroke="none"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 21.4s-6.8-6.4-6.8-11.4a6.8 6.8 0 0 1 13.6 0c0 5-6.8 11.4-6.8 11.4z" fill="#e8554e"/><circle cx="12" cy="10" r="2.5" fill="#fff"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19.6 12a7.6 7.6 0 1 1-2.4-5.5" fill="none" stroke="#3b6fd8" stroke-width="2.4"/><path d="M20.8 3.6v5.6h-5.6z" fill="#3b6fd8" stroke="#3b6fd8" stroke-width="1"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M4 20l1.3-4.8L16.2 4.3a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.8 18.7z" fill="#f5c542"/><path d="M15 5.5l3.5 3.5" fill="none"/><path d="M4 20l1.3-4.8 3.5 3.5z" fill="#f3d9a8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#2ecc71"/><path d="M7.4 12.4l3.1 3.1 6.1-6.6" fill="none" stroke="#fff" stroke-width="2.5"/></symbol></defs></svg>
+<script>function gi(id,cls){return '<svg class="gi'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-'+id+'"/></svg>';}var GI_FIRE='<img class="gi" src="assets/bin-burn.png?v=20261025" alt="">',GI_TRUCK='<img class="ci-img" src="assets/truck.png?v=20261025" alt="">';</script>
+
+<div id="app">
+<a href="gomi_rescue_start.html?lang=ko" class="home-link" aria-label="홈으로" title="홈으로"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></a>
+
+<div id="content"></div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// データテーブル
+// ════════════════════════════════════════════════
+const RANK_VAL = {S:4, A:3, B:2, C:1};
+const RANK_COLOR = {S:'#8a5200', A:'#1d5bb8', B:'#17703a', C:'#a63f00'};
+
+const DESCS = {
+  stage1: {
+    cat: '仕分けの腕前',
+    S: '神業の仕分け人', A: '頼れる仕分け上手',
+    B: '見習いの仕分け係', C: '仕分けはまだまだこれから'
+  },
+  stage2: {
+    cat: '危険物発見力',
+    S: '危険を一瞬で見抜く鷹の目', A: 'しっかり周りを見渡せる観察者',
+    B: 'たまに見逃す新米サーチャー', C: '危険物にはまだ気づきにくい'
+  },
+  stage3: {
+    cat: '安全知識',
+    S: '安全知識の生き字引', A: '正しい知識をしっかり持つ',
+    B: '知識はまだ半人前', C: '安全知識はこれから学ぶ段階'
+  }
+};
+
+// 3ステージのランク合計（3〜12）が「称号の格」を決める（0〜5の6段階）。
+// 称号×3ステージのコードで 4×4×4 = 64通りの「実力タイプ」が存在する。
+const TIER_META = [
+  {title:'ただの一般人'},
+  {title:'見習いレスキュー隊員'},
+  {title:'半人前クリーナー'},
+  {title:'頼れる清掃レンジャー'},
+  {title:'エリート・ゴミレスキュー隊員'},
+  {title:'完全なる掃除人'}
+];
+function tierIndexFromSum(sum){
+  if(sum<=3) return 0;
+  if(sum<=5) return 1;
+  if(sum<=7) return 2;
+  if(sum<=9) return 3;
+  if(sum<=11) return 4;
+  return 5;
+}
+
+// ════════════════════════════════════════════════
+// 見た目キャラクター・ガチャプール
+// 各「格」ごとに、少年・少女・青年・老人・（たまに）動物など見た目のまったく違う
+// バリエーションを用意し、結果を見るたびに1体を抽選する（ガチャ演出）。
+// 実力の「格」（＝プレイの成績）はプールを絞るのに使うが、その中の誰が出るかは毎回ランダム。
+// ════════════════════════════════════════════════
+const TIER_VARIANTS = [
+  // 0: ただの一般人
+  [
+    {id:'t0_boy', emoji:'🧒', name:'ぼーっとした少年', sub:'ごみの分別に興味を持ちはじめたばかり。'},
+    {id:'t0_girl', emoji:'👧', name:'まだ自信のない少女', sub:'仕分けはまだドキドキしながらやっている。'},
+    {id:'t0_man', emoji:'🧑', name:'寝ぼけまなこの青年', sub:'なんとなく毎日をすごしている一般人。'},
+    {id:'t0_woman', emoji:'👩', name:'ちょっぴり忙しい女性', sub:'ごみのことまで手が回っていない。'},
+    {id:'t0_tanuki', emoji:'🦝', name:'まよいこんだ子だぬき', sub:'いたずら好きで、ごみ箱をあさりがち。'}
+  ],
+  // 1: 見習いレスキュー隊員
+  [
+    {id:'t1_boy', emoji:'🧑‍🚒', name:'元気いっぱいの少年隊員', sub:'制服はまだ少し大きい、やる気だけは満点。'},
+    {id:'t1_girl', emoji:'👧', name:'はりきり少女隊員', sub:'先輩の真似をして仕分けを練習中。'},
+    {id:'t1_man', emoji:'👨‍🚒', name:'新人青年レスキュー', sub:'配属されたばかりでドキドキしている。'},
+    {id:'t1_woman', emoji:'👩‍🚒', name:'新人女性レスキュー', sub:'まっすぐな気持ちで街のために動く。'},
+    {id:'t1_neko', emoji:'🐈', name:'おっちょこちょいの野良ねこ隊員', sub:'なぜか隊員服を着ている野良ねこ。'}
+  ],
+  // 2: 半人前クリーナー
+  [
+    {id:'t2_boy', emoji:'🧑‍🔧', name:'成長中の少年クリーナー', sub:'コツをつかみはじめた自信がにじむ。'},
+    {id:'t2_girl', emoji:'👧', name:'負けん気の少女クリーナー', sub:'苦手な危険物さがしも特訓中。'},
+    {id:'t2_man', emoji:'🧔', name:'ベテラン見習いの男性', sub:'不器用だが真面目にこつこつ働く。'},
+    {id:'t2_woman', emoji:'👩‍🔧', name:'てきぱき女性クリーナー', sub:'手際のよさが評判になりはじめた。'},
+    {id:'t2_karasu', emoji:'🐦‍⬛', name:'がんばりやのカラス隊員', sub:'高いところから街を見張る鳥の相棒。'}
+  ],
+  // 3: 頼れる清掃レンジャー
+  [
+    {id:'t3_man', emoji:'🦸‍♂️', name:'頼れる青年レンジャー', sub:'ピンチの街をいくつも救ってきた実力者。'},
+    {id:'t3_woman', emoji:'🦸‍♀️', name:'頼れる女性レンジャー', sub:'冷静な判断力で仲間を導く。'},
+    {id:'t3_ojisan', emoji:'👨‍🦳', name:'貫禄のあるおじさんレンジャー', sub:'現場歴が長く、街のことを知り尽くす。'},
+    {id:'t3_obasan', emoji:'👩‍🦳', name:'貫禄のあるおばさんレンジャー', sub:'ご近所さんからの信頼も厚い。'},
+    {id:'t3_kitsune', emoji:'🦊', name:'森からきたキツネレンジャー', sub:'街と森をつなぐ不思議な仲間。'}
+  ],
+  // 4: エリート・ゴミレスキュー隊員
+  [
+    {id:'t4_man', emoji:'🕴️', name:'エリート青年隊員', sub:'どんな依頼も完璧にこなすホープ。'},
+    {id:'t4_woman', emoji:'👩‍💼', name:'エリート女性隊員', sub:'街中から指名がくる敏腕レスキュー。'},
+    {id:'t4_grandpa', emoji:'👴', name:'熟練のおじいちゃん隊員', sub:'長年の経験がにじみ出るベテラン中のベテラン。'},
+    {id:'t4_grandma', emoji:'👵', name:'熟練のおばあちゃん隊員', sub:'その知恵に助けられた住民は数知れず。'},
+    {id:'t4_wolf', emoji:'🐺', name:'伝説と噂されるオオカミ隊員', sub:'夜の街を静かに見回る謎の相棒。'}
+  ],
+  // 5: 完全なる掃除人（通常枠。★スーパーレア3種は下のRARE_CHARACTERSで別管理）
+  [
+    {id:'t5_boy', emoji:'🧑‍🎓', name:'完全なる掃除・少年天才', sub:'若くしてすべてを極めた神童。'},
+    {id:'t5_girl', emoji:'👧', name:'完全なる掃除・少女天才', sub:'その年齢ですでに街の伝説になりつつある。'},
+    {id:'t5_man', emoji:'🦹‍♂️', name:'完全なる掃除人（青年）', sub:'迷いのない一挙一動、まさに完璧。'},
+    {id:'t5_woman', emoji:'🦹‍♀️', name:'完全なる掃除人（女性）', sub:'すべての判断が街を守る答えになる。'},
+    {id:'t5_elder', emoji:'🧙', name:'伝説の長老掃除人', sub:'何十年も街を見守り続けてきた生きる伝説。'}
+  ]
+];
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// ════════════════════════════════════════════════
+// SSSランク限定・スーパーレアキャラ（3種）
+// SSS（合計12＝全ステージSランク）に到達したとき、1体につき1/30の確率で
+// 通常枠（上のt5_*）の代わりに出現する（3体合計で1/10の確率）。
+// ════════════════════════════════════════════════
+const RARE_CHARACTERS = [
+  {
+    id:'rare1', emoji:'🔥🌿',
+    title:'不死鳥アッシュフェニックス',
+    sub:'燃やしたはずのごみの灰から、新しい緑が芽吹く。すべてを浄化し、循環させる伝説の存在。',
+    prompt:"Legendary phoenix-themed mascot character for a Japanese kids' recycling-rescue adventure game, titled '不死鳥アッシュフェニックス (Ash Phoenix)'. Rising from a small pile of glowing ash, wings made of stylized flames blending into green leaves and recycling-arrow symbols, warm gradient of deep red-orange transitioning into fresh green along the wingtips, glowing golden eyes, confident triumphant pose with wings spread. Flat vector illustration style, soft rounded shapes, thick clean outlines, bright cheerful colors, simple gradient or transparent background, no text, full body, character-sheet reference pose."
+  },
+  {
+    id:'rare2', emoji:'⚖️✨',
+    title:'選別の神ワケルシン',
+    sub:'太古よりごみの分別を見守ってきたといわれる、街の守り神。四本の腕で、迷わずすべてを正しい場所へ導く。',
+    prompt:"Legendary deity-themed mascot character for a Japanese kids' recycling-rescue adventure game, titled '選別の神ワケルシン (Wakerushin, God of Sorting)'. A small, friendly shrine-guardian-like spirit with four gentle arms, each hand holding a miniature glowing bin (red flame bin, blue non-burnable bin, green recycling bin, pink wait/hold bin), soft flowing robe patterned with recycling arrows, a serene smiling expression, faint halo of light behind the head shaped like a circular recycling symbol. Flat vector illustration style, soft rounded shapes, thick clean outlines, bright cheerful pastel-and-gold colors, simple gradient or transparent background, no text, full body, character-sheet reference pose."
+  },
+  {
+    id:'rare3', emoji:'👑🏙️',
+    title:'クリーン・エンペラー',
+    sub:'完全に浄化された街に君臨する、清掃者たちの頂点。その姿を見た者は、二度とごみを見捨てない。',
+    prompt:"Legendary emperor-themed mascot character for a Japanese kids' recycling-rescue adventure game, titled 'クリーン・エンペラー (Clean Emperor)'. A small regal chibi figure wearing golden ceremonial armor with a flowing cape shaped like a miniature glittering cityscape skyline, a crown made of interlocking recycling-arrow symbols, holding a golden scepter topped with a sparkling truck emblem, standing tall with a proud confident smile, sparkling city skyline silhouette faintly visible behind. Flat vector illustration style, soft rounded shapes, thick clean outlines, bright cheerful gold-and-blue colors, simple gradient or transparent background, no text, full body, character-sheet reference pose."
+  }
+];
+
+// この「実績（3ステージのクリア時刻の組み合わせ）」1回につき1回だけ抽選し、
+// 同じ結果画面をリロードしても毎回変わらないようにする（＝再挑戦するたびに新しい抽選＝ガチャ）。
+function rollCharacterVariant(tierIndex, fingerprint){
+  try{
+    const saved = JSON.parse(localStorage.getItem('grq_char_roll') || 'null');
+    if(saved && saved.fp === fingerprint) return saved;
+  }catch(e){}
+  let variantId = null, rareId = null;
+  if(tierIndex === 5){
+    const roll = Math.floor(Math.random()*30); // 0..29
+    if(roll < 3){ rareId = RARE_CHARACTERS[roll].id; }
+    else{ variantId = pickRandom(TIER_VARIANTS[5]).id; }
+  } else {
+    variantId = pickRandom(TIER_VARIANTS[tierIndex]).id;
+  }
+  const result = {fp: fingerprint, tierIndex, variantId, rareId};
+  try{ localStorage.setItem('grq_char_roll', JSON.stringify(result)); }catch(e){}
+  return result;
+}
+
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem('grq_progress') || '{}'); }
+  catch(e){ return {}; }
+}
+
+const PAGE_LANG="ko";
+const COPY={"ko": {"title": "고미 구조 퀘스트 | 최종 결과", "home": "홈으로", "lockedTitle": "아직 결과를 볼 수 없어요", "lockedBody": "세 스테이지를 모두 완료하면 최종 캐릭터와 칭호를 여기서 볼 수 있어요.", "endingTitle": "도시에 평화가 돌아왔어요.", "endingCopy": "위험한 쓰레기로 가득할 뻔한 도시가 세 번의 구조 활동 덕분에 조금씩 안전해지고 있어요.<br>쓰레기를 잘 분리하고, 위험을 발견하고, 배운 지식을 활용했어요.<br><b>여러분의 행동이 도시를 지켰어요.</b>", "badgeFinal": "최종 캐릭터", "badgeRare": "★★★ 슈퍼 레어 ★★★", "tiers": ["분리배출 도우미", "구조대 연습생", "능숙한 청소 대원", "도시 구조 레인저", "엘리트 구조 대원", "청소의 달인"], "tierSubs": ["쓰레기 분리배출을 이제 배우기 시작했어요.", "도움을 주며 꾸준히 배우고 있어요.", "위험한 물건을 더 잘 찾게 되었어요.", "위험을 찾아 도시를 도울 수 있어요.", "신중한 선택으로 도시를 지켜요.", "모든 구조 도전을 훌륭히 해냈어요."], "rareTitle": "슈퍼 레어 구조 영웅!", "rareSub": "멋진 활약을 축하하는 특별한 친구가 나타났어요!", "code": "랭크 코드", "stage": "스테이지", "cats": ["분리배출 실력", "위험 발견", "안전 지식"], "rankDesc": [["분리배출 달인", "믿음직한 분리배출 실력", "분리배출 연습생", "분리배출을 더 배워요"], ["위험을 한눈에 발견", "꼼꼼한 관찰자", "유망한 수색 대원", "위험 찾기를 더 배워요"], ["안전 지식 전문가", "안전 지식을 잘 알고 있어요", "안전 지식을 더 배워요", "안전의 기초부터 배워요"]], "recap": "플레이 기록", "score": "점수", "found": "찾은 위험 물품", "correct": "정답 수", "cta": "리튬이온 배터리 회수 장소 찾기", "ctaSmall": "랭킹에 등록하고 발견을 기록해요"}};
+async function main(){
+ const t=COPY[PAGE_LANG],p=loadProgress(),s1=p.stage1,s2=p.stage2,s3=p.stage3,content=document.getElementById('content');
+ const homeHref=PAGE_LANG==='ja_child'?'gomi_rescue_start.html?lang=ja&toddler=1':`gomi_rescue_start.html?lang=${PAGE_LANG==='ja_child'?'ja':PAGE_LANG}`;
+ if(!s1||!s2||!s3){content.innerHTML=`<div class="notice"><div class="em">${gi('lock')}</div><h2>${t.lockedTitle}</h2><p>${t.lockedBody}</p><a href="${homeHref}">${t.home}</a></div>`;return;}
+ const code=s1.rank4+s2.rank4+s3.rank4,sum=RANK_VAL[s1.rank4]+RANK_VAL[s2.rank4]+RANK_VAL[s3.rank4],tierIndex=tierIndexFromSum(sum);
+ const fingerprint=[s1.ts,s2.ts,s3.ts].join('|'),roll=rollCharacterVariant(tierIndex,fingerprint),rare=roll.rareId?RARE_CHARACTERS.find(r=>r.id===roll.rareId):null;
+ const variant=!rare?(TIER_VARIANTS[tierIndex].find(v=>v.id===roll.variantId)||TIER_VARIANTS[tierIndex][0]):null;
+ const cardEmoji=rare?rare.emoji:variant.emoji,cardTitle=rare?t.rareTitle:t.tiers[tierIndex],cardSub=rare?t.rareSub:t.tierSubs[tierIndex];
+ const badge=rare?t.badgeRare:t.badgeFinal,imgKey=rare?`rare_${rare.id}`:variant.id;
+ const stageRows=[{rank:s1.rank4,cat:t.cats[0],desc:t.rankDesc[0][4-RANK_VAL[s1.rank4]]},{rank:s2.rank4,cat:t.cats[1],desc:t.rankDesc[1][4-RANK_VAL[s2.rank4]]},{rank:s3.rank4,cat:t.cats[2],desc:t.rankDesc[2][4-RANK_VAL[s3.rank4]]}];
+ const totalScore=sum*1000+(s1.score||0)+(s2.found||0)*50+(s3.correct||0)*50;
+ const rankingHref=PAGE_LANG==='ja_child'?'gomi_rescue_ranking_ja.html':`gomi_rescue_ranking_${PAGE_LANG}.html`;
+ content.innerHTML=`<div class="ending"><div class="end-emoji"><img src="assets/city-3.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🏙️✨'))"></div><div class="end-title">${t.endingTitle}</div><div class="end-copy">${t.endingCopy}</div></div>
+ <div class="charcard${rare?' rare':''}"><div class="badge${rare?' rare':''}">${badge}</div><div class="char-visual" id="char-visual"><div class="emoji-fallback">${cardEmoji}</div></div><div class="title">${cardTitle}</div><div class="code">${t.code}：${code}</div><div class="rare-sub">${cardSub}</div><div class="stat-lines">${stageRows.map((r,i)=>`<div class="stat-line"><div class="stat-rank" style="color:${RANK_COLOR[r.rank]}">${r.rank}</div><div class="stat-body"><div class="stat-cat">${t.stage} ${i+1}・${r.cat}</div><div class="stat-desc">${r.desc}</div></div></div>`).join('')}</div></div>
+ <div class="recap"><div class="recap-title">${t.recap}</div><div class="recap-row"><span>${t.stage} 1 ${t.score}</span><b>${(s1.score||0).toLocaleString()}</b></div><div class="recap-row"><span>${t.stage} 2 ${t.found}</span><b>${s2.found||0}/${s2.total||0}</b></div><div class="recap-row"><span>${t.stage} 3 ${t.correct}</span><b>${s3.correct||0}/${s3.total||0}</b></div></div>
+ <div class="cta-row"><a href="${rankingHref}" class="btn-cta"><span class="ti-wrap"><img src="assets/logo-battery.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🔋'))"></span>${t.cta}<small>${t.ctaSmall}</small></a></div>`;
+ const testImg=new Image();testImg.onload=()=>{const vis=document.getElementById('char-visual');if(vis)vis.innerHTML=`<img src="chars/${imgKey}.png" class="char-icon-img" alt="${cardTitle}">`;};testImg.onerror=()=>{};testImg.src=`chars/${imgKey}.png`;
+}
+main();
+</script>
+</body>
+</html>

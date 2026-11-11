@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
+<title>ごみれすきゅーくえすと｜ばしょを とうろくして らんきんぐ</title>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167x167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ごみれすきゅーくえすと｜とうろく">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#ffb300; --purple:#7653c8; --purpled:#4a287d; --ink:#2a3a4a;
+  --blue:#2a72d4; --teal:#0f8f83; --green:#2ecc71;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'BIZ UDPGothic','Noto Sans JP',sans-serif;color:var(--ink);}
+body{background:linear-gradient(160deg,#173a34,#0f8f83);display:flex;align-items:center;justify-content:center;}
+
+#app{width:100%;max-width:460px;height:100%;max-height:900px;position:relative;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+@media(min-width:521px){#app{border-radius:28px;height:92vh;}}
+
+.home-link{position:fixed;top:max(env(safe-area-inset-top),10px);left:12px;z-index:999;
+  width:44px;height:44px;border-radius:50%;background:#fff;border:none;
+  font-size:17px;box-shadow:0 0 0 2px #17302c,0 3px 10px rgba(0,0,0,.25);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;color:inherit;}
+.home-link:active{transform:scale(.9);}
+
+/* ===== incomplete notice ===== */
+.notice{padding:40px 24px;text-align:center;}
+.notice .em{font-size:52px;margin-bottom:10px;}
+.notice h2{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:20px;color:var(--purpled);margin-bottom:10px;}
+.notice p{font-size:12.5px;font-weight:700;color:#5a5570;line-height:1.8;margin-bottom:20px;}
+.notice a{display:inline-block;background:#5b3aa8;color:#fff;
+  text-decoration:none;font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:16px;padding:14px 32px;border-radius:40px;
+  box-shadow:0 0 0 2px #2e1a63,0 5px 0 2px #2e1a63;}
+
+/* ===== hero ===== */
+.hero{background:linear-gradient(160deg,#173a34,#0f8f83);color:#fff;text-align:center;
+  padding:max(env(safe-area-inset-top),26px) 22px 22px;}
+.hero-emoji{font-size:42px;}
+.hero-title{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:19px;color:#c9ffb0;margin:4px 0 8px;
+  text-shadow:0 2px 0 rgba(0,0,0,.25);line-height:1.4;}
+.hero-copy{font-size:11.5px;font-weight:700;line-height:1.8;color:#e2fff0;max-width:360px;margin:0 auto;}
+
+/* ===== my character recap chip ===== */
+.me-chip{margin:14px 18px 0;display:flex;align-items:center;gap:10px;background:#f6f0ff;border-radius:16px;
+  padding:10px 14px;text-decoration:none;color:inherit;box-shadow:0 2px 8px rgba(60,30,110,.1);}
+.me-chip .mc-icon{width:42px;height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;
+  border-radius:9px;overflow:hidden;}
+.me-chip .mc-icon img{width:100%;height:100%;object-fit:cover;display:block;}
+.me-chip .mc-body{flex:1;min-width:0;}
+.me-chip .mc-label{font-size:9px;font-weight:900;color:#6a4fa0;letter-spacing:.05em;}
+.me-chip .mc-title{font-size:12.5px;font-weight:900;color:var(--purpled);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.me-chip .mc-arrow{font-size:12px;font-weight:900;color:#fff;background:#5b3aa8;border-radius:20px;padding:8px 12px;flex-shrink:0;
+  white-space:nowrap;box-shadow:0 0 0 2px #2e1a63,0 3px 0 2px #2e1a63;}
+
+/* ===== register ===== */
+.register{margin:16px 18px;background:#f0faf3;border:2px dashed #a8e6b8;border-radius:16px;padding:16px;text-align:center;}
+.register h3{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:16px;color:#0b6b5f;margin-bottom:8px;}
+.register p{font-size:11px;font-weight:700;color:#1f4d36;margin-bottom:12px;line-height:1.6;}
+.register input{width:100%;padding:11px 14px;border-radius:12px;border:2px solid #b8e8c4;font-size:14px;
+  font-weight:700;margin-bottom:10px;text-align:center;background:#fff;color:var(--ink);}
+.register input:focus{outline:none;border-color:var(--green);}
+/* 色覚多様性対応：色ベタ＋白抜き文字（濃い背景に白文字でコントラスト比 約6:1）。色に頼らず明暗と形で目立たせる */
+.jbrc-link{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:15px;color:#fff;
+  background:#1d5bb8;border:3px solid #fff;border-radius:16px;padding:13px 10px;margin:4px 0 14px;
+  text-decoration:none;line-height:1.4;text-align:center;
+  box-shadow:0 0 0 2px #14336b,0 5px 0 2px #14336b;}
+.jbrc-link:active{transform:translateY(3px);box-shadow:0 0 0 2px #14336b,0 2px 0 2px #14336b;}
+.jbrc-link .jl-main{display:flex;align-items:center;justify-content:center;gap:8px;}
+.jbrc-link .jl-main .gi{flex:none;width:30px;height:30px;padding:4px;background:#fff;border-radius:50%;}
+.jbrc-link .jl-sub{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;opacity:1;}
+.loc-row{display:flex;gap:8px;margin-bottom:12px;}
+.loc-row select{flex:1;padding:11px 8px;border-radius:12px;border:2px solid #b8e8c4;font-size:12.5px;
+  font-weight:700;background:#fff;color:var(--ink);}
+.loc-row input{flex:1;margin-bottom:0;}
+.loc-row select:focus{outline:none;border-color:var(--green);}
+.loc-section-label{font-size:11px;font-weight:900;color:#1f4d36;text-align:left;margin-bottom:8px;line-height:1.6;}
+.loc-block{background:#fff;border:2px solid #cdeed7;border-radius:14px;padding:12px;margin-bottom:10px;text-align:left;}
+.loc-block-num{display:inline-block;font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:900;font-size:11px;color:#0a5a2e;
+  background:#dff5e1;border-radius:8px;padding:2px 9px;margin-bottom:8px;}
+.loc-block .loc-row{margin-bottom:8px;}
+.loc-block input.place-input{margin-bottom:0;text-align:left;font-size:12.5px;}
+.loc-hint{font-size:9.5px;font-weight:700;color:#2f5f45;margin:-2px 0 12px;line-height:1.6;text-align:left;}
+.btn-register{width:100%;padding:17px 12px;border:3px solid #fff;border-radius:40px;background:#0b6b5f;
+  color:#fff;font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:19px;letter-spacing:.06em;
+  cursor:pointer;box-shadow:0 0 0 2px #063d36,0 6px 0 2px #063d36;}
+.btn-register:active{transform:translateY(4px);box-shadow:0 0 0 2px #063d36,0 2px 0 2px #063d36;}
+/* 登録中は薄くせず、濃いグレー＋白文字のまま読めるようにする */
+.btn-register:disabled{opacity:1;background:#55606b;box-shadow:0 0 0 2px #2f3740,0 6px 0 2px #2f3740;cursor:default;}
+.register input::placeholder{color:#55665d;opacity:1;font-weight:700;}
+.reg-note{font-size:9.5px;font-weight:700;color:#2f5f45;margin-top:8px;line-height:1.6;}
+
+/* ===== ranking ===== */
+.ranking{margin:18px 18px 8px;}
+.ranking-title{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;font-size:17px;color:var(--purpled);text-align:center;margin-bottom:10px;}
+.rank-list{display:flex;flex-direction:column;gap:7px;}
+.rank-item{display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:12px;padding:10px 12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.rank-item.me{background:#eafcf0;border:2px solid var(--green);}
+.rank-top{display:flex;align-items:center;gap:10px;}
+.rank-pos{font-family:'Fredoka One','BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP',sans-serif;font-weight:400;font-size:15px;width:26px;text-align:center;color:#6a4fa0;flex-shrink:0;}
+.rank-pos.medal{font-size:19px;}
+.rank-char-icon{width:34px;height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;
+  border-radius:8px;overflow:hidden;}
+.rank-char-icon img{width:100%;height:100%;object-fit:cover;display:block;}
+.rank-name{flex:1;min-width:0;}
+.rank-name .n{font-size:12.5px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-name .t{font-size:9.5px;font-weight:700;color:#5a5570;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-score{font-family:'Fredoka One','BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP',sans-serif;font-weight:400;font-size:13px;color:#1b7a45;letter-spacing:.05em;flex-shrink:0;}
+.rank-chars{display:flex;gap:5px;flex-wrap:wrap;padding-left:44px;}
+.rank-char-badge{display:flex;align-items:center;gap:3px;background:#e2f9ec;border-radius:8px;padding:3px 7px;
+  font-size:9.5px;font-weight:700;color:#14693a;}
+.rank-empty{text-align:center;font-size:11.5px;color:#6a5a88;font-weight:700;padding:16px;}
+
+.btn-view-board{display:block;text-align:center;background:#ffc61a;border:3px solid #fff;
+  color:#2b1a00;text-decoration:none;font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:15.5px;line-height:1.5;
+  padding:14px 14px;border-radius:18px;box-shadow:0 0 0 2px #5a3a00,0 5px 0 2px #5a3a00;}
+.btn-view-board:active{transform:translateY(3px);box-shadow:0 0 0 2px #5a3a00,0 2px 0 2px #5a3a00;}
+.btn-view-board .ti-wrap{width:30px;height:30px;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 2px #5a3a00;}
+.btn-view-board .ti-wrap img{width:20px;height:20px;}
+.btn-view-board .vb-text{display:inline-block;vertical-align:middle;text-wrap:balance;}
+.btn-view-board small{display:block;font-family:'BIZ UDPGothic','Noto Sans JP',sans-serif;font-size:12px!important;
+  font-weight:700;margin-top:4px;opacity:1;color:#3b2600;text-wrap:balance;}
+
+.retry-row{padding:16px 18px 30px;display:flex;flex-direction:column;gap:10px;}
+.btn-retry-all{width:100%;padding:15px;border:none;border-radius:40px;background:#5b3aa8;
+  color:#fff;font-family:'Noto Sans JP','BIZ UDPGothic',sans-serif;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 0 0 2px #2e1a63,0 5px 0 2px #2e1a63;}
+.btn-retry-all .gi{width:1.7em;height:1.7em;padding:3px;background:#fff;border-radius:50%;vertical-align:middle;margin-right:6px;}
+.btn-retry-all:active{transform:translateY(3px);box-shadow:0 0 0 2px #2e1a63,0 2px 0 2px #2e1a63;}
+.gi{width:1.15em;height:1.15em;vertical-align:-.22em;display:inline-block;flex-shrink:0;}
+.home-link .gi,.bgm-btn .gi,.refresh-btn .gi{width:24px;height:24px;vertical-align:0;}
+.notice .em .gi{width:52px;height:52px;vertical-align:0;}
+.hero-emoji{display:flex;gap:10px;align-items:center;justify-content:center;}
+.hero-emoji img,.hero-emoji .gi{width:46px;height:46px;object-fit:contain;vertical-align:0;}
+.ti{width:22px;height:22px;object-fit:contain;vertical-align:-5px;margin-right:4px;}
+.ti-wrap{display:inline-flex;width:26px;height:26px;border-radius:50%;background:#fff;align-items:center;justify-content:center;margin-right:6px;vertical-align:-7px;}
+.ti-wrap img{width:18px;height:18px;object-fit:contain;display:block;}
+.jbrc-link .gi{width:1.2em;height:1.2em;}
+</style>
+<style id="mud-accessibility-and-type">
+html,body{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif}
+:where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:3px solid #17152b!important;outline-offset:3px!important;box-shadow:0 0 0 5px #fff!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+:where(small,.hero-copy,.sc-desc,.sc-status,.loc-hint,.reg-note,.stat-cat,.recap-title,.rc-name .t,.rc-score small,.rank-name .t,.rank-score small,.hint,.stage-badge){font-size:max(12px,1em)!important}
+:where(.loc-section-label,.loc-block-num,.btn-reset,.rc-empty,.rank-empty,.detail-empty,.btn-home-text,.skip-btn,.sg-skip){font-size:max(12px,1em)!important}
+#scr-game .hud-chip .l{font-size:max(12px,1em)!important}#scr-game .hud-chip .v{font-size:clamp(17px,3.6vh,24px)!important}
+button,a[role="button"]{touch-action:manipulation}
+button,input,select,textarea{font-family:inherit}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="5.5" y="11" width="13" height="9.5" rx="1" fill="#fff3d6"/><path d="M3 11.8 12 3.5l9 8.3z" fill="#e8554e"/><rect x="10" y="14.5" width="4" height="6" rx=".6" fill="#a3703a"/></symbol><symbol id="i-sound-on" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#5aa0f0"/><path d="M15.5 9c1.5 1.7 1.5 4.3 0 6" fill="none"/><path d="M18.2 6.3c3 3.2 3 8.2 0 11.4" fill="none"/></symbol><symbol id="i-sound-off" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#aab4c0"/><path d="M15.8 9.3l5 5.4M20.8 9.3l-5 5.4" fill="none" stroke="#e8554e" stroke-width="2"/></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#8a95a3" stroke-width="2"/><rect x="5" y="11" width="14" height="10" rx="2.2" fill="#f2b630"/><circle cx="12" cy="15.6" r="1.5" fill="#3b2a1a" stroke="none"/><path d="M12 16.5v2" fill="none"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 20.5C5 15.6 3 11.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6c0 3-2 7-9 11.9z" fill="#ee5a6f"/></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="9.6" y="2.2" width="4.8" height="2.6" rx=".8" fill="#8a95a3"/><circle cx="12" cy="13.6" r="7.6" fill="#fff"/><path d="M12 13.6V9" fill="none" stroke-width="1.8"/><path d="M12 13.6l3 1.8" fill="none"/></symbol><symbol id="i-ok" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3.2"/></symbol><symbol id="i-ng" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="3.4"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,2.40 14.70,9.08 21.89,9.59 16.37,14.22 18.11,21.21 12.00,17.40 5.89,21.21 7.63,14.22 2.11,9.59 9.30,9.08" fill="#ffd23f"/></symbol><symbol id="i-warning" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.4 22 20.6H2z" fill="#ffcc33"/><path d="M12 9.6v5" fill="none" stroke-width="1.8"/><circle cx="12" cy="17.6" r=".5" fill="#3b2a1a"/></symbol><symbol id="i-burst" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,1.00 13.85,6.29 18.47,3.10 16.85,8.47 22.46,8.60 18.00,12.00 22.46,15.40 16.85,15.53 18.47,20.90 13.85,17.71 12.00,23.00 10.15,17.71 5.53,20.90 7.15,15.53 1.54,15.40 6.00,12.00 1.54,8.60 7.15,8.47 5.53,3.10 10.15,6.29" fill="#ff8a3d"/><polygon points="12.00,5.80 12.99,8.96 15.64,6.98 14.59,10.12 17.90,10.08 15.20,12.00 17.90,13.92 14.59,13.88 15.64,17.02 12.99,15.04 12.00,18.20 11.01,15.04 8.36,17.02 9.41,13.88 6.10,13.92 8.80,12.00 6.10,10.08 9.41,10.12 8.36,6.98 11.01,8.96" fill="#ffd23f" stroke="none"/></symbol><symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(0 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(45 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(90 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(135 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(180 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(225 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(270 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7" fill="#9aa5b1"/><circle cx="12" cy="12" r="2.6" fill="#fff"/></symbol><symbol id="i-tire" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#444"/><circle cx="12" cy="12" r="4.6" fill="#c8ced6"/><circle cx="12" cy="12" r="1.3" fill="#3b2a1a" stroke="none"/></symbol><symbol id="i-puff" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="8" cy="13.5" r="4.2" fill="#fff" stroke="#9aa5b1"/><circle cx="13.2" cy="10.5" r="5.2" fill="#fff" stroke="#9aa5b1"/><circle cx="17.2" cy="14.4" r="4" fill="#fff" stroke="#9aa5b1"/><circle cx="8" cy="13.5" r="3.6" fill="#fff" stroke="none"/><circle cx="13.2" cy="10.5" r="4.6" fill="#fff" stroke="none"/><circle cx="17.2" cy="14.4" r="3.4" fill="#fff" stroke="none"/><rect x="8" y="14" width="9.4" height="4.2" fill="#fff" stroke="none"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 21.4s-6.8-6.4-6.8-11.4a6.8 6.8 0 0 1 13.6 0c0 5-6.8 11.4-6.8 11.4z" fill="#e8554e"/><circle cx="12" cy="10" r="2.5" fill="#fff"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19.6 12a7.6 7.6 0 1 1-2.4-5.5" fill="none" stroke="#3b6fd8" stroke-width="2.4"/><path d="M20.8 3.6v5.6h-5.6z" fill="#3b6fd8" stroke="#3b6fd8" stroke-width="1"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M4 20l1.3-4.8L16.2 4.3a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.8 18.7z" fill="#f5c542"/><path d="M15 5.5l3.5 3.5" fill="none"/><path d="M4 20l1.3-4.8 3.5 3.5z" fill="#f3d9a8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#2ecc71"/><path d="M7.4 12.4l3.1 3.1 6.1-6.6" fill="none" stroke="#fff" stroke-width="2.5"/></symbol></defs></svg>
+<script>function gi(id,cls){return '<svg class="gi'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-'+id+'"/></svg>';}var GI_FIRE='<img class="gi" src="assets/bin-burn.png?v=20261025" alt="">',GI_TRUCK='<img class="ci-img" src="assets/truck.png?v=20261025" alt="">';</script>
+
+<div id="app">
+<a href="gomi_rescue_start.html?lang=ja&toddler=1" class="home-link" aria-label="ほーむへ" title="ほーむへ"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></a>
+
+<div id="content"></div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// データテーブル（gomi_rescue_result.html と同じロジックを使い、
+// 保存済みのガチャ抽選結果（grq_char_roll）をそのまま再利用する）
+// ════════════════════════════════════════════════
+const RANK_VAL = {S:4, A:3, B:2, C:1};
+
+const TIER_META = [
+  {title:'ただの一般人'},
+  {title:'見習いレスキュー隊員'},
+  {title:'半人前クリーナー'},
+  {title:'頼れる清掃レンジャー'},
+  {title:'エリート・ゴミレスキュー隊員'},
+  {title:'完全なる掃除人'}
+];
+function tierIndexFromSum(sum){
+  if(sum<=3) return 0;
+  if(sum<=5) return 1;
+  if(sum<=7) return 2;
+  if(sum<=9) return 3;
+  if(sum<=11) return 4;
+  return 5;
+}
+
+const TIER_VARIANTS = [
+  [
+    {id:'t0_boy', emoji:'🧒', name:'ぼーっとした少年'},
+    {id:'t0_girl', emoji:'👧', name:'まだ自信のない少女'},
+    {id:'t0_man', emoji:'🧑', name:'寝ぼけまなこの青年'},
+    {id:'t0_woman', emoji:'👩', name:'ちょっぴり忙しい女性'},
+    {id:'t0_tanuki', emoji:'🦝', name:'まよいこんだ子だぬき'}
+  ],
+  [
+    {id:'t1_boy', emoji:'🧑‍🚒', name:'元気いっぱいの少年隊員'},
+    {id:'t1_girl', emoji:'👧', name:'はりきり少女隊員'},
+    {id:'t1_man', emoji:'👨‍🚒', name:'新人青年レスキュー'},
+    {id:'t1_woman', emoji:'👩‍🚒', name:'新人女性レスキュー'},
+    {id:'t1_neko', emoji:'🐈', name:'おっちょこちょいの野良ねこ隊員'}
+  ],
+  [
+    {id:'t2_boy', emoji:'🧑‍🔧', name:'成長中の少年クリーナー'},
+    {id:'t2_girl', emoji:'👧', name:'負けん気の少女クリーナー'},
+    {id:'t2_man', emoji:'🧔', name:'ベテラン見習いの男性'},
+    {id:'t2_woman', emoji:'👩‍🔧', name:'てきぱき女性クリーナー'},
+    {id:'t2_karasu', emoji:'🐦‍⬛', name:'がんばりやのカラス隊員'}
+  ],
+  [
+    {id:'t3_man', emoji:'🦸‍♂️', name:'頼れる青年レンジャー'},
+    {id:'t3_woman', emoji:'🦸‍♀️', name:'頼れる女性レンジャー'},
+    {id:'t3_ojisan', emoji:'👨‍🦳', name:'貫禄のあるおじさんレンジャー'},
+    {id:'t3_obasan', emoji:'👩‍🦳', name:'貫禄のあるおばさんレンジャー'},
+    {id:'t3_kitsune', emoji:'🦊', name:'森からきたキツネレンジャー'}
+  ],
+  [
+    {id:'t4_man', emoji:'🕴️', name:'エリート青年隊員'},
+    {id:'t4_woman', emoji:'👩‍💼', name:'エリート女性隊員'},
+    {id:'t4_grandpa', emoji:'👴', name:'熟練のおじいちゃん隊員'},
+    {id:'t4_grandma', emoji:'👵', name:'熟練のおばあちゃん隊員'},
+    {id:'t4_wolf', emoji:'🐺', name:'伝説と噂されるオオカミ隊員'}
+  ],
+  [
+    {id:'t5_boy', emoji:'🧑‍🎓', name:'完全なる掃除・少年天才'},
+    {id:'t5_girl', emoji:'👧', name:'完全なる掃除・少女天才'},
+    {id:'t5_man', emoji:'🦹‍♂️', name:'完全なる掃除人（青年）'},
+    {id:'t5_woman', emoji:'🦹‍♀️', name:'完全なる掃除人（女性）'},
+    {id:'t5_elder', emoji:'🧙', name:'伝説の長老掃除人'}
+  ]
+];
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+const RARE_CHARACTERS = [
+  {id:'rare1', emoji:'🔥🌿', title:'不死鳥アッシュフェニックス'},
+  {id:'rare2', emoji:'⚖️✨', title:'選別の神ワケルシン'},
+  {id:'rare3', emoji:'👑🏙️', title:'クリーン・エンペラー'}
+];
+
+// gomi_rescue_result.html と同じ抽選ロジック。同じ実績（フィンガープリント）なら
+// localStorage（grq_char_roll）に保存済みの結果をそのまま使い、無ければここで新規抽選する。
+function rollCharacterVariant(tierIndex, fingerprint){
+  try{
+    const saved = JSON.parse(localStorage.getItem('grq_char_roll') || 'null');
+    if(saved && saved.fp === fingerprint) return saved;
+  }catch(e){}
+  let variantId = null, rareId = null;
+  if(tierIndex === 5){
+    const roll = Math.floor(Math.random()*30);
+    if(roll < 3){ rareId = RARE_CHARACTERS[roll].id; }
+    else{ variantId = pickRandom(TIER_VARIANTS[5]).id; }
+  } else {
+    variantId = pickRandom(TIER_VARIANTS[tierIndex]).id;
+  }
+  const result = {fp: fingerprint, tierIndex, variantId, rareId};
+  try{ localStorage.setItem('grq_char_roll', JSON.stringify(result)); }catch(e){}
+  return result;
+}
+
+// ════════════════════════════════════════════════
+// 都道府県リスト
+// ════════════════════════════════════════════════
+const PREFECTURES = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県',
+  '埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県',
+  '岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県',
+  '鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県',
+  '佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'];
+
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem('grq_progress') || '{}'); }
+  catch(e){ return {}; }
+}
+
+// ════════════════════════════════════════════════
+// 共有ランキング保存（Artifact上ならwindow.storageで全員共有、
+// それ以外の環境ではブラウザ内ローカル保存にフォールバック）
+//
+// ★Supabase移行メモ：将来的にここをSupabaseに差し替える場合は、
+//   loadRanking() → supabase.from('grq_ranking').select('*').order('totalScore',{ascending:false})
+//   saveRanking(list) → 呼び出し側をinsert 1件（例：supabase.from('grq_ranking').insert(entry)）に変更する形が自然です。
+//   現状はリスト全体を読み書きする簡易実装なので、移行時はentry単位のinsert関数に置き換えてください。
+// ════════════════════════════════════════════════
+async function storageAvailable(){
+  return typeof window.storage !== 'undefined' && window.storage;
+}
+async function loadRanking(){
+  try{
+    if(await storageAvailable()){
+      const res = await window.storage.get('grq_ranking', true);
+      return res ? JSON.parse(res.value) : [];
+    }
+  }catch(e){}
+  try{ return JSON.parse(localStorage.getItem('grq_ranking_local') || '[]'); }
+  catch(e){ return []; }
+}
+async function saveRanking(list){
+  try{
+    if(await storageAvailable()){
+      await window.storage.set('grq_ranking', JSON.stringify(list), true);
+      return;
+    }
+  }catch(e){}
+  try{ localStorage.setItem('grq_ranking_local', JSON.stringify(list)); }catch(e){}
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const PAGE_LANG="ja_child";
+const CHILD_PREF={"北海道": "ほっかいどう", "青森県": "あおもりけん", "岩手県": "いわてけん", "宮城県": "みやぎけん", "秋田県": "あきたけん", "山形県": "やまがたけん", "福島県": "ふくしまけん", "茨城県": "いばらきけん", "栃木県": "とちぎけん", "群馬県": "ぐんまけん", "埼玉県": "さいたまけん", "千葉県": "ちばけん", "東京都": "とうきょうと", "神奈川県": "かながわけん", "新潟県": "にいがたけん", "富山県": "とやまけん", "石川県": "いしかわけん", "福井県": "ふくいけん", "山梨県": "やまなしけん", "長野県": "ながのけん", "岐阜県": "ぎふけん", "静岡県": "しずおかけん", "愛知県": "あいちけん", "三重県": "みえけん", "滋賀県": "しがけん", "京都府": "きょうとふ", "大阪府": "おおさかふ", "兵庫県": "ひょうごけん", "奈良県": "ならけん", "和歌山県": "わかやまけん", "鳥取県": "とっとりけん", "島根県": "しまねけん", "岡山県": "おかやまけん", "広島県": "ひろしまけん", "山口県": "やまぐちけん", "徳島県": "とくしまけん", "香川県": "かがわけん", "愛媛県": "えひめけん", "高知県": "こうちけん", "福岡県": "ふくおかけん", "佐賀県": "さがけん", "長崎県": "ながさきけん", "熊本県": "くまもとけん", "大分県": "おおいたけん", "宮崎県": "みやざきけん", "鹿児島県": "かこしまけん", "沖縄県": "おきなわけん"};
+const COPY={"ja_child": {"title": "ごみれすきゅーくえすと｜とうろく", "home": "ほーむへ", "lockedTitle": "まだ とうろくできないよ", "lockedBody": "3つの すてーじを ぜんぶ くりあすると、らんきんぐに とうろくできるよ。", "heroTitle": "まちのでんちを あつめる ばしょを さがそう！", "heroCopy": "げーむは ここまで。つぎは きみの まちで さがしてみよう。<br>ちかくの おみせを みつけて とうろくすると、ほんとうの まちも たすけられるよ。", "myResult": "きみの なかま", "viewResult": "けっかを みる ▶", "formTitle": "らんきんぐに のせよう", "formIntro": "なまえと、みつけた ばしょを かいてね。<br>ほかの まちで みつけた ばしょでも いいよ。", "name": "なまえ（12もじまで）", "jbrc": "JBRCのおみせさがしで ばしょを みる", "newTab": "あたらしい ぺーじで ひらく ↗", "spots": "でんちを あつめる ばしょ（1つめは ひっす、さいだい3つ）", "spot": "あつめる ばしょ", "required": "ひっす", "optional": "どちらでも", "pref": "けん", "city": "し・く・まち・むら", "place": "おみせや ばしょの なまえ（かかなくてもよい）", "hint": "ひんと：JBRCの まどにでる おみせの なまえや じゅうしょを みてね。", "register": "らんきんぐに とうろく", "boardTitle": "みんなの らんきんぐ", "board": "でんちを あつめる ばしょを みる", "boardSmall": "きろくと なかまを らんきんぐで みよう", "restart": "さいしょから あそぶ", "nameError": "なまえを いれてね。", "spot1Error": "1つめは けんと し・く・まち・むらを いれてね。JBRCで さがしてみよう。", "spotNError": "{n}つめは けんと し・く・まち・むらを いれてね。おみせの なまえは かかなくても いいよ。", "saving": "とうろく しているよ…", "saved": "とうろくしたよ！らんきんぐを ひらくね…", "confirm": "いままでの きろくを けして、さいしょから はじめる？", "tiers": ["ごみわけの おてつだい", "れすきゅーの れんしゅうせい", "おそうじの たつじん", "まちを まもる れんじゃー", "えりーと れすきゅー", "おそうじの めいじん"], "rare": "とっても めずらしい なかま！"}};
+async function main(){
+ const t=COPY[PAGE_LANG],p=loadProgress(),s1=p.stage1,s2=p.stage2,s3=p.stage3,content=document.getElementById('content');
+ const lang=PAGE_LANG==='ja_child'?'ja':PAGE_LANG,homeHref=`gomi_rescue_start.html?lang=${lang}${PAGE_LANG==='ja_child'?'&toddler=1':''}`;
+ if(!s1||!s2||!s3){content.innerHTML=`<div class="notice"><div class="em">${gi('lock')}</div><h2>${t.lockedTitle}</h2><p>${t.lockedBody}</p><a href="${homeHref}">${t.home}</a></div>`;return;}
+ const code=s1.rank4+s2.rank4+s3.rank4,sum=RANK_VAL[s1.rank4]+RANK_VAL[s2.rank4]+RANK_VAL[s3.rank4],tierIndex=tierIndexFromSum(sum);
+ const fingerprint=[s1.ts,s2.ts,s3.ts].join('|'),roll=rollCharacterVariant(tierIndex,fingerprint),rare=roll.rareId?RARE_CHARACTERS.find(r=>r.id===roll.rareId):null;
+ const variant=!rare?(TIER_VARIANTS[tierIndex].find(v=>v.id===roll.variantId)||TIER_VARIANTS[tierIndex][0]):null;
+ const cardEmoji=rare?rare.emoji:variant.emoji,cardTitle=rare?t.rare:t.tiers[tierIndex],imgKey=rare?`rare_${rare.id}`:variant.id;
+ const tierOrder=['D','C','B','A','S'];
+ const rankingHref=PAGE_LANG==='ja_child'?'gomi_rescue_leaderboard_ja_child.html':`gomi_rescue_leaderboard_${PAGE_LANG}.html`;
+ const resultHref=PAGE_LANG==='ja_child'?'gomi_rescue_result_ja_child.html':`gomi_rescue_result_${PAGE_LANG}.html`;
+ content.innerHTML=`<div class="hero"><div class="hero-emoji"><img src="assets/logo-battery.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🔋'))">${gi('pin')}</div><div class="hero-title">${t.heroTitle}</div><div class="hero-copy">${t.heroCopy}</div></div>
+ <a href="${resultHref}" class="me-chip"><div class="mc-icon" id="me-chip-icon"><span>${cardEmoji}</span></div><div class="mc-body"><div class="mc-label">${t.myResult}</div><div class="mc-title">${cardTitle}</div></div><div class="mc-arrow">${t.viewResult}</div></a>
+ <div class="register"><h3>${t.formTitle}</h3><p>${t.formIntro}</p><input type="text" id="reg-name" maxlength="12" placeholder="${t.name}">
+ <a href="https://www.jbrc-system.com/page/pc/techc010/" target="_blank" rel="noopener" class="jbrc-link"><span class="jl-main">${gi('pin')}<span>${t.jbrc}</span></span><span class="jl-sub">${t.newTab}</span></a>
+ <div class="loc-section-label">${t.spots}</div>${[1,2,3].map(n=>`<div class="loc-block"><span class="loc-block-num">${t.spot} ${n}（${n===1?t.required:t.optional}）</span><div class="loc-row"><select id="reg-pref-${n}"><option value="">${t.pref}</option>${PREFECTURES.map(pr=>`<option value="${escapeHtml(pr)}">${PAGE_LANG==='ja_child'?CHILD_PREF[pr]:escapeHtml(pr)}</option>`).join('')}</select><input type="text" id="reg-city-${n}" maxlength="20" placeholder="${t.city}"></div><input type="text" class="place-input" id="reg-place-${n}" maxlength="30" placeholder="${t.place}"></div>`).join('')}
+ <div class="loc-hint">※ ${t.hint}</div><button class="btn-register" id="btn-register">${t.register}</button><div class="reg-note" id="reg-note"></div></div>
+ <div class="ranking"><div class="ranking-title"><img class="ti" src="assets/medal-gold.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🏅'))">${t.boardTitle}</div><a href="${rankingHref}" class="btn-view-board"><span class="ti-wrap"><img src="assets/logo-battery.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🔋'))"></span><span class="vb-text">${t.board}</span><small>${t.boardSmall}</small></a></div>
+ <div class="retry-row"><button class="btn-retry-all" id="btn-restart">${gi('refresh')} ${t.restart}</button></div>`;
+ (function(){const im=new Image();im.onload=()=>{const el=document.getElementById('me-chip-icon');if(el)el.innerHTML=`<img src="chars/${imgKey}.png" alt="">`;};im.src=`chars/${imgKey}.png`;})();
+ document.getElementById('btn-register').addEventListener('click',async()=>{
+  const nameInput=document.getElementById('reg-name'),note=document.getElementById('reg-note'),name=nameInput.value.trim();
+  const blocks=[1,2,3].map(n=>({prefecture:document.getElementById('reg-pref-'+n).value,city:document.getElementById('reg-city-'+n).value.trim(),place:document.getElementById('reg-place-'+n).value.trim()}));
+  if(!name){note.textContent=t.nameError;note.style.color='#ff5a4d';return;}
+  if(!blocks[0].prefecture||!blocks[0].city){note.textContent=t.spot1Error;note.style.color='#ff5a4d';return;}
+  for(let i=1;i<3;i++){const b=blocks[i],hasAny=b.prefecture||b.city||b.place;if(hasAny&&(!b.prefecture||!b.city)){note.textContent=t.spotNError.replace('{n}',String(i+1));note.style.color='#ff5a4d';return;}}
+  const locations=blocks.filter(b=>b.prefecture&&b.city).slice(0,3),btn=document.getElementById('btn-register');btn.disabled=true;btn.textContent=t.saving;
+  const entry={name:name.slice(0,12),code,tier:cardTitle,tierEmoji:cardEmoji,imgKey,rare:!!rare,locations:locations.map(l=>({prefecture:l.prefecture,city:l.city.slice(0,20),place:l.place.slice(0,30)})),totalScore:sum*1000+(s1.score||0)+(s2.found||0)*50+(s3.correct||0)*50,ts:Date.now()};
+  const list=await loadRanking();list.push(entry);await saveRanking(list);note.textContent=t.saved;note.style.color='#1f9c53';setTimeout(()=>{location.href=rankingHref+'?ts='+entry.ts;},700);
+ });
+ document.getElementById('btn-restart').addEventListener('click',()=>{if(confirm(t.confirm)){try{localStorage.removeItem('grq_progress');}catch(e){}location.href=homeHref;}});
+}
+main();
+</script>
+<script id="ranking-a11y">(()=>{const ids=["reg-name", "reg-pref-1", "reg-city-1", "reg-place-1", "reg-pref-2", "reg-city-2", "reg-place-2", "reg-pref-3", "reg-city-3", "reg-place-3"],labels=["なまえ（ひっす、12もじまで）", "1つめの けん（ひっす）", "1つめの し・く・まち・むら（ひっす）", "1つめの おみせや ばしょの なまえ（かかなくてもよい）", "2つめの けん（かかなくてもよい）", "2つめの し・く・まち・むら（かかなくてもよい）", "2つめの おみせや ばしょの なまえ（かかなくてもよい）", "3つめの けん（かかなくてもよい）", "3つめの し・く・まち・むら（かかなくてもよい）", "3つめの おみせや ばしょの なまえ（かかなくてもよい）"];ids.forEach((id,i)=>{const e=document.getElementById(id);if(e){e.setAttribute('aria-label',labels[i]);e.setAttribute('title',labels[i])}});document.getElementById('reg-note')?.setAttribute('aria-live','polite')})();</script>
+</body>
+</html>

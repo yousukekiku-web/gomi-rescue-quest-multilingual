@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
+<title>ゴミレスキュークエスト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#bfe8f5; --skydeep:#8fd0ea;
+  --blue:#2a72d4; --blued:#0f4f9c;
+  --teal:#0f8f83; --tealdeep:#0a6b62;
+  --purple:#7653c8; --purpled:#4a287d;
+  --gold:#ffb300; --green:#2ecc71; --ink:#2a3a4a;
+  --gray:#9aa7b0;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'BIZ UDPGothic','Noto Sans JP',sans-serif;color:var(--ink);}
+body{background:linear-gradient(180deg,var(--sky),var(--skydeep));display:flex;align-items:center;justify-content:center;}
+
+#app{width:100%;max-width:460px;height:100%;max-height:900px;position:relative;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.25);}
+@media(min-width:521px){#app{border-radius:28px;height:92vh;}}
+
+.hero{background:linear-gradient(180deg,var(--sky),var(--skydeep));text-align:center;
+  padding:max(env(safe-area-inset-top),22px) 20px 20px;}
+.truck{font-size:clamp(46px,13vw,64px);animation:bob 2.4s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.g-title{font-family:'Fredoka One',sans-serif;font-size:clamp(26px,7.5vw,36px);color:var(--blue);
+  text-shadow:2px 2px 0 #fff,4px 4px 0 rgba(0,60,120,.12);margin-top:2px;}
+.g-sub{font-size:12px;font-weight:900;color:#1a5fa0;letter-spacing:.12em;margin:0;white-space:nowrap}.brand-row{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:8px}.brand-row button,.brand-row select{font:inherit;font-size:12px;font-weight:700;color:#174c78;background:#fff;border:2px solid #5b9dc8;border-radius:999px;padding:7px 10px;cursor:pointer;white-space:nowrap}.brand-row select{max-width:112px}.brand-row button[aria-pressed="true"]{background:#fff0b8;border-color:#d88b00;color:#684500}@media(max-width:380px){.brand-row{gap:4px}.brand-row button,.brand-row select{font-size:11px;padding:6px 7px}.g-sub{font-size:10px;letter-spacing:.07em}}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+.story{margin:14px 18px 0;background:#fff8e8;border:2px dashed #f0d189;border-radius:16px;padding:14px 16px;
+  font-size:12.5px;line-height:1.85;font-weight:700;color:#6a5320;text-align:left;}
+.story b{color:#c2740a;}
+
+.city-wrap{margin:16px 18px 4px;background:#eef7ff;border-radius:16px;padding:14px 16px;box-shadow:inset 0 1px 4px rgba(0,0,0,.06);}
+.city-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.city-label{font-size:11.5px;font-weight:900;color:#3378b8;letter-spacing:.05em;}
+.city-pct{font-family:'Fredoka One',sans-serif;font-size:16px;color:#1a3a5a;}
+.city-bar{height:14px;background:#dbeaf5;border-radius:7px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.12);}
+.city-bar-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,#ffb14d,#2ecc71);transition:width .5s ease;}
+.city-scene{text-align:center;font-size:26px;margin-top:8px;letter-spacing:2px;}
+.city-scene img{width:100%;height:auto;display:block;border-radius:10px;}
+
+.stages{padding:16px 18px 8px;display:flex;flex-direction:column;gap:12px;}
+.stage-card{display:flex;align-items:center;gap:12px;border-radius:18px;padding:12px 14px;
+  box-shadow:0 4px 14px rgba(0,0,0,.1);text-decoration:none;color:inherit;position:relative;overflow:hidden;}
+.stage-card{border-left:9px solid var(--accent,#999);}
+/* 区切りを分かりやすくする破線枠：ロック中・挑戦中・クリア後のすべてに表示（::afterなのでiPhone Safariでも角丸に沿う） */
+.stage-card::after,.result-card::after{content:'';position:absolute;inset:5px;border:2px dashed var(--dash,#8c98a4);border-radius:13px;pointer-events:none;}
+/* クリア前のロック状態：全体を薄くせず「淡い色の面＋点線枠」で表現し、文字は読める濃さを保つ */
+.stage-card.locked{pointer-events:none;background:var(--lockbg,#eef1f4) !important;border-left-color:var(--lockaccent,#b5bec7);
+  box-shadow:none;--dash:#8c98a4;}
+.stage-card.locked .sc-icon{opacity:.55;filter:grayscale(.6);}
+.stage-card.locked .sc-title{color:#4a5866;}
+.stage-card.locked .sc-desc,.stage-card.locked .sc-status{color:#4a5866 !important;}
+.sc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;box-shadow:0 3px 8px rgba(0,0,0,.15);color:#fff;}
+.sc1{background:#ffd5c6;--accent:#d9532f;--dash:#b8401f;--lockbg:#f6e6e0;--lockaccent:#e7b3a3;} .sc1 .sc-icon{background:linear-gradient(135deg,#5a9cf0,var(--blue));}
+.sc2{background:#bfeee4;--accent:#0f8f83;--dash:#0a6b62;--lockbg:#e3f1ee;--lockaccent:#a6d3cc;} .sc2 .sc-icon{background:linear-gradient(135deg,#17ab9d,var(--teal));}
+.sc3{background:#dccffa;--accent:#6b46c1;--dash:#4a2e94;--lockbg:#ebe5f6;--lockaccent:#c2b4e3;} .sc3 .sc-icon{background:linear-gradient(135deg,#8a64dd,var(--purple));}
+.sc-body{flex:1;min-width:0;}
+.sc-title{font-family:'Fredoka One',sans-serif;font-size:15px;color:var(--ink);}
+.sc-desc{font-size:10.5px;font-weight:700;color:#3a4958;margin-top:1px;}
+.sc-status{font-size:10px;font-weight:900;margin-top:4px;}
+.sc-status.clear{color:#0b6b35;}
+.sc-status.locked-lb{color:#4a5866;}
+.sc-rank{font-family:'Fredoka One',sans-serif;font-size:22px;width:38px;height:38px;line-height:34px;text-align:center;flex-shrink:0;
+  background:#fff;border:2px solid #2a3a4a;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.15);}
+.lock-emoji{font-size:20px;flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid #2a3a4a;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.15);color:#2a3a4a;position:relative;z-index:1;}
+
+.result-card{margin:4px 18px 18px;display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px;
+  background:linear-gradient(135deg,#2a2140,#4a3672);color:#fff;text-decoration:none;box-shadow:0 6px 18px rgba(40,20,70,.35);}
+.result-card.locked{pointer-events:none;background:#e4e7ec;color:#4a5866;box-shadow:none;--dash:#8c98a4;}
+.result-card.locked .sc-title{color:#4a5866;}
+.result-card.locked .sc-desc{color:#4a5866;}
+.result-card.locked .sc-icon{opacity:.55;filter:grayscale(.6);}
+.result-card .sc-icon{background:linear-gradient(135deg,var(--gold),#ff8a00);}
+.result-card{position:relative;--dash:rgba(255,255,255,.75);}
+.result-card .sc-title{color:#fff;}
+.result-card .sc-desc{color:#d8cdf0;}
+
+.foot-row{padding:4px 18px 26px;text-align:center;}
+.btn-reset{background:none;border:none;font-size:11px;color:#9aa7b0;font-weight:700;text-decoration:underline;cursor:pointer;padding:8px;}
+.gi{width:1.15em;height:1.15em;vertical-align:-.22em;display:inline-block;flex-shrink:0;}
+.home-link .gi,.bgm-btn .gi,.refresh-btn .gi{width:24px;height:24px;vertical-align:0;}
+.truck img{width:clamp(70px,20vw,100px);height:auto;display:block;margin:0 auto;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));}
+.stage-card .sc-icon.has-img,.result-card .sc-icon.has-img{background:#fff;}
+.sc-icon.has-img img{width:40px;height:40px;object-fit:contain;display:block;}
+.lock-emoji .gi{width:20px;height:20px;vertical-align:0;}
+.sc-status .gi{width:1.25em;height:1.25em;}
+</style>
+<style id="mud-accessibility-and-type">
+html,body{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif}
+:where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:3px solid #17152b!important;outline-offset:3px!important;box-shadow:0 0 0 5px #fff!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+:where(small,.hero-copy,.sc-desc,.sc-status,.loc-hint,.reg-note,.stat-cat,.recap-title,.rc-name .t,.rc-score small,.rank-name .t,.rank-score small,.hint,.stage-badge){font-size:max(12px,1em)!important}
+:where(.loc-section-label,.loc-block-num,.btn-reset,.rc-empty,.rank-empty,.detail-empty,.btn-home-text,.skip-btn,.sg-skip){font-size:max(12px,1em)!important}
+#scr-game .hud-chip .l{font-size:max(12px,1em)!important}#scr-game .hud-chip .v{font-size:clamp(17px,3.6vh,24px)!important}
+button,a[role="button"]{touch-action:manipulation}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="5.5" y="11" width="13" height="9.5" rx="1" fill="#fff3d6"/><path d="M3 11.8 12 3.5l9 8.3z" fill="#e8554e"/><rect x="10" y="14.5" width="4" height="6" rx=".6" fill="#a3703a"/></symbol><symbol id="i-sound-on" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#5aa0f0"/><path d="M15.5 9c1.5 1.7 1.5 4.3 0 6" fill="none"/><path d="M18.2 6.3c3 3.2 3 8.2 0 11.4" fill="none"/></symbol><symbol id="i-sound-off" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#aab4c0"/><path d="M15.8 9.3l5 5.4M20.8 9.3l-5 5.4" fill="none" stroke="#e8554e" stroke-width="2"/></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#8a95a3" stroke-width="2"/><rect x="5" y="11" width="14" height="10" rx="2.2" fill="#f2b630"/><circle cx="12" cy="15.6" r="1.5" fill="#3b2a1a" stroke="none"/><path d="M12 16.5v2" fill="none"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 20.5C5 15.6 3 11.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6c0 3-2 7-9 11.9z" fill="#ee5a6f"/></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="9.6" y="2.2" width="4.8" height="2.6" rx=".8" fill="#8a95a3"/><circle cx="12" cy="13.6" r="7.6" fill="#fff"/><path d="M12 13.6V9" fill="none" stroke-width="1.8"/><path d="M12 13.6l3 1.8" fill="none"/></symbol><symbol id="i-ok" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3.2"/></symbol><symbol id="i-ng" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="3.4"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,2.40 14.70,9.08 21.89,9.59 16.37,14.22 18.11,21.21 12.00,17.40 5.89,21.21 7.63,14.22 2.11,9.59 9.30,9.08" fill="#ffd23f"/></symbol><symbol id="i-warning" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.4 22 20.6H2z" fill="#ffcc33"/><path d="M12 9.6v5" fill="none" stroke-width="1.8"/><circle cx="12" cy="17.6" r=".5" fill="#3b2a1a"/></symbol><symbol id="i-burst" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,1.00 13.85,6.29 18.47,3.10 16.85,8.47 22.46,8.60 18.00,12.00 22.46,15.40 16.85,15.53 18.47,20.90 13.85,17.71 12.00,23.00 10.15,17.71 5.53,20.90 7.15,15.53 1.54,15.40 6.00,12.00 1.54,8.60 7.15,8.47 5.53,3.10 10.15,6.29" fill="#ff8a3d"/><polygon points="12.00,5.80 12.99,8.96 15.64,6.98 14.59,10.12 17.90,10.08 15.20,12.00 17.90,13.92 14.59,13.88 15.64,17.02 12.99,15.04 12.00,18.20 11.01,15.04 8.36,17.02 9.41,13.88 6.10,13.92 8.80,12.00 6.10,10.08 9.41,10.12 8.36,6.98 11.01,8.96" fill="#ffd23f" stroke="none"/></symbol><symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(0 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(45 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(90 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(135 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(180 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(225 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(270 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7" fill="#9aa5b1"/><circle cx="12" cy="12" r="2.6" fill="#fff"/></symbol><symbol id="i-tire" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#444"/><circle cx="12" cy="12" r="4.6" fill="#c8ced6"/><circle cx="12" cy="12" r="1.3" fill="#3b2a1a" stroke="none"/></symbol><symbol id="i-puff" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="8" cy="13.5" r="4.2" fill="#fff" stroke="#9aa5b1"/><circle cx="13.2" cy="10.5" r="5.2" fill="#fff" stroke="#9aa5b1"/><circle cx="17.2" cy="14.4" r="4" fill="#fff" stroke="#9aa5b1"/><circle cx="8" cy="13.5" r="3.6" fill="#fff" stroke="none"/><circle cx="13.2" cy="10.5" r="4.6" fill="#fff" stroke="none"/><circle cx="17.2" cy="14.4" r="3.4" fill="#fff" stroke="none"/><rect x="8" y="14" width="9.4" height="4.2" fill="#fff" stroke="none"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 21.4s-6.8-6.4-6.8-11.4a6.8 6.8 0 0 1 13.6 0c0 5-6.8 11.4-6.8 11.4z" fill="#e8554e"/><circle cx="12" cy="10" r="2.5" fill="#fff"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19.6 12a7.6 7.6 0 1 1-2.4-5.5" fill="none" stroke="#3b6fd8" stroke-width="2.4"/><path d="M20.8 3.6v5.6h-5.6z" fill="#3b6fd8" stroke="#3b6fd8" stroke-width="1"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M4 20l1.3-4.8L16.2 4.3a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.8 18.7z" fill="#f5c542"/><path d="M15 5.5l3.5 3.5" fill="none"/><path d="M4 20l1.3-4.8 3.5 3.5z" fill="#f3d9a8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#2ecc71"/><path d="M7.4 12.4l3.1 3.1 6.1-6.6" fill="none" stroke="#fff" stroke-width="2.5"/></symbol></defs></svg>
+<script>function gi(id,cls){return '<svg class="gi'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-'+id+'"/></svg>';}var GI_FIRE='<img class="gi" src="assets/bin-burn.png?v=20261109" alt="">',GI_TRUCK='<img class="ci-img" src="assets/truck.png?v=20261109" alt="">';</script>
+
+<div id="app">
+
+  <div class="hero">
+    <div class="truck"><img src="assets/truck.png?v=20261109" alt="" onerror="this.replaceWith(document.createTextNode('🚛'))"></div>
+    <div class="g-title">ゴミレスキュークエスト</div>
+    <div class="brand-row"><button id="toddler-toggle" type="button" aria-pressed="false">幼児用（ようじ）</button><div class="g-sub">GOMI RESCUE QUEST</div><label id="language-label" for="language-select" class="visually-hidden">言語</label><select id="language-select" aria-label="言語"><option value="ja">日本語</option><option value="en">English</option><option value="zh">中文（简体）</option><option value="ko">한국어</option></select></div>
+  </div>
+
+  <div class="story" id="story-text"></div>
+
+  <div class="city-wrap">
+    <div class="city-row">
+      <span class="city-label" id="city-label">街のクリーンさ</span>
+      <span class="city-pct" id="city-pct">0%</span>
+    </div>
+    <div class="city-bar"><div class="city-bar-fill" id="city-bar-fill" style="width:0%;"></div></div>
+    <div class="city-scene" id="city-scene"></div>
+  </div>
+
+  <div class="stages" id="stages"></div>
+
+  <a href="gomi_rescue_result_ja.html" class="result-card locked" id="result-card">
+    <div class="sc-icon has-img"><img src="assets/trophy.png?v=20261109" alt="" onerror="this.replaceWith(document.createTextNode('🏆'))"></div>
+    <div class="sc-body">
+      <div class="sc-title" id="result-title">最終結果 &amp; ランキング</div>
+      <div class="sc-desc" id="result-desc">3ステージすべてクリアすると解放されます</div>
+    </div>
+    <span class="lock-emoji" id="result-lock"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock"/></svg></span>
+  </a>
+
+  <div class="foot-row"><button class="btn-reset" id="btn-reset">進行状況をリセットする</button></div>
+
+</div>
+
+<script>
+const STORY_DEFAULT = 'ここ数年、街には危険なゴミがどんどん増えてきた……分別ミスによる収集車の発火事故、街のあちこちに散らばる放置ごみ。このままでは街はゴミに埋もれてしまう。<br><br><b>頼れるレスキュー隊員はキミしかいない。</b><br>3つのステージを乗りこえて、街を守ろう！';
+
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem('grq_progress') || '{}'); }
+  catch(e){ return {}; }
+}
+
+const STAGES = [
+  {num:1, cls:'sc1', icon:'🚛', title:'ステージ1', desc:'仕分けクイズ循環型ゲーム', href:'gomi_rescue_stage1.html'},
+  {num:2, cls:'sc2', icon:'🔍', title:'ステージ2', desc:'4大危険物さがし', href:'gomi_rescue_stage2.html'},
+  {num:3, cls:'sc3', icon:'🧠', title:'ステージ3', desc:'ひらめき安全クイズ', href:'gomi_rescue_stage3.html'},
+];
+const RANK_COLOR = {S:'#b06f00', A:'#1f5fbf', B:'#2e7d32', C:'#b45309'};
+
+function render(){
+  const p = loadProgress();
+  // 1→2→3の順にクリアした分だけ数える（順番を飛ばした記録があっても数えない）
+  const isCleared = s => !!(p['stage'+s.num] && p['stage'+s.num].rank4);
+  let clearedCount = 0;
+  while(clearedCount < STAGES.length && isCleared(STAGES[clearedCount])) clearedCount++;
+  const pct = Math.round(clearedCount/3*100);
+  document.getElementById('city-pct').textContent = pct+'%';
+  document.getElementById('city-bar-fill').style.width = pct+'%';
+  const scenes = ['🏚️💨🗑️🗑️🗑️','🏘️🗑️🗑️🌥️','🏢🌤️🗑️🌳','🏙️✨🌳🌳✨'];
+  // 街の絵：荒れた街 → きれいな街（画像が読み込めない場合は絵文字で代替）
+  const CITY_ALT = ['ごみであふれた街','少し片づいた街','かなりきれいになった街','すっかりきれいな街'];
+  const cityEl = document.getElementById('city-scene');
+  cityEl.innerHTML = '';
+  const cityImg = new Image();
+  cityImg.alt = CITY_ALT[clearedCount];
+  cityImg.onerror = ()=>{ cityEl.textContent = scenes[clearedCount]; };
+  cityImg.src = 'assets/city-'+clearedCount+'.png?v=20261109';
+  cityEl.appendChild(cityImg);
+
+  const storyEl = document.getElementById('story-text');
+  if(clearedCount===0) storyEl.innerHTML = STORY_DEFAULT;
+  else if(clearedCount<3) storyEl.innerHTML = '街のゴミは少しずつ片づいてきた。でも、まだ危険は残っている……<br><b>次のステージに向かおう！</b>';
+  else storyEl.innerHTML = '3つのミッションを乗り越え、街はすっかり見違えるほどキレイになった。<br><b>最後に、キミの活躍の結果を確認しよう！</b>';
+
+  const wrap = document.getElementById('stages');
+  wrap.innerHTML='';
+  STAGES.forEach((s,i)=>{
+    const prev = i <= clearedCount;      // 前のステージまで順番にクリア済みなら開放
+    const done = prev && isCleared(s);   // ロック中はクリア情報を出さない
+    const a = document.createElement('a');
+    a.className = 'stage-card '+s.cls+(prev?'':' locked'); if(!prev){a.setAttribute('aria-disabled','true');a.setAttribute('tabindex','-1');}
+    a.href = prev ? s.href : '#';
+    let statusHtml;
+    if(!prev) statusHtml = '<div class="sc-status locked-lb">未開放・前のステージをクリアしてね</div>';
+    else if(done) statusHtml = '<div class="sc-status clear">'+gi('check')+' ✓ クリア</div>';
+    else statusHtml = '<div class="sc-status" style="color:#8a4a00;">▶ 挑戦できます！</div>';
+    a.innerHTML = `<div class="sc-icon has-img"><img src="assets/stage-icon-${s.num}.png?v=20261109" alt="" onerror="this.replaceWith(document.createTextNode('${s.icon}'))"></div>
+      <div class="sc-body"><div class="sc-title">${s.title}｜${s.desc}</div>${statusHtml}</div>
+      ${done ? `<div class="sc-rank" style="color:${RANK_COLOR[p['stage'+s.num].rank4]}">${p['stage'+s.num].rank4}</div>` : (prev ? '' : '<span class="lock-emoji">'+gi('lock')+'</span>')}`;
+    wrap.appendChild(a);
+  });
+
+  const resultCard = document.getElementById('result-card');
+  const resultDesc = document.getElementById('result-desc');
+  const resultLock = document.getElementById('result-lock');
+  if(clearedCount>=3){
+    resultCard.classList.remove('locked');
+    resultDesc.textContent = 'キミの称号を確認して、ランキングに登録しよう！';
+    resultLock.textContent = '▶';
+  } else {
+    resultDesc.textContent = `あと${3-clearedCount}ステージクリアで解放されます`;
+    resultLock.innerHTML = gi('lock');
+  }
+}
+render();
+
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  if(confirm(grqLang==='ja'&&grqChild?GRQ_TEXT.ja.childConfirm:(GRQ_TEXT[grqLang]||GRQ_TEXT.ja).confirm)){
+    try{ localStorage.removeItem('grq_progress'); }catch(e){}
+    render();
+  }
+});
+</script>
+<script>
+const GRQ_TEXT={
+ja:{language:'言語',child:'幼児用（ひらがな）',adult:'幼児用（ようじ）',title:'ゴミレスキュークエスト',city:'街のクリーンさ',story:['ここ数年、街には危険なゴミがどんどん増えてきた……分別ミスによる収集車の発火事故、街のあちこちに散らばる放置ごみ。このままでは街はゴミに埋もれてしまう。<br><br><b>頼れるレスキュー隊員はキミしかいない。</b><br>3つのステージを乗りこえて、街を守ろう！','街のゴミは少しずつ片づいてきた。でも、まだ危険は残っている……<br><b>次のステージに向かおう！</b>','3つのミッションを乗り越え、街はすっかり見違えるほどキレイになった。<br><b>最後に、キミの活躍の結果を確認しよう！</b>'],childCity:'まちの きれいさ',childReady:'▶ ちょうせんできるよ！',childLocked:'まだ あそべないよ・まえのステージをクリアしてね',childClear:'クリア',childResult:'さいごのけっかとランキング',childResultLocked:'3つのステージを ぜんぶクリアすると あそべるよ',childResultReady:'きみの しょうごうをみて、ランキングに のせよう！',childRemaining:'あと{n}つ クリアすると あそべるよ',childReset:'すすみぐあいを さいしょにもどす',childConfirm:'すすみぐあいを さいしょにもどすよ。いいかな？',childStories:['まちに あぶない ごみが ふえてきたよ。ごみの わけかたを まちがえると、ごみしゅうしゅうしゃから ひが でることも あるよ。<br><br><b>たすけられるのは、きみだけ！</b><br>3つの ステージに ちょうせんして、まちを まもろう！','まちの ごみが すこしずつ なくなってきたよ。でも、まだ あぶないものが あるよ……<br><b>つぎのステージへ すすもう！</b>','3つのミッションを クリアして、まちが とても きれいに なったよ！<br><b>さいごに、きみの がんばりを みてみよう！</b>'],stages:[['ステージ1','仕分けクイズ・リサイクル'],['ステージ2','4つの危険なゴミをさがそう'],['ステージ3','ひらめき安全クイズ']],locked:'未開放・前のステージをクリアしてね',ready:'▶ 挑戦できます！',clear:'クリア',result:'最終結果 & ランキング',resultLocked:'3ステージすべてクリアすると解放されます',resultReady:'キミの称号を確認して、ランキングに登録しよう！',remaining:'あと{n}ステージクリアで解放されます',reset:'進行状況をリセットする',confirm:'進行状況をリセットします。よろしいですか？',cityAlt:['ごみであふれた街','少し片づいた街','かなりきれいになった街','すっかりきれいな街']},
+en:{language:'Language',child:'Young children',adult:'Young children',title:'Gomi Rescue Quest',city:'Town Cleanliness',story:['Dangerous trash is piling up around town. Sorting mistakes can even cause garbage truck fires. If nothing changes, trash could cover the town!<br><br><b>You are the rescue hero we need.</b><br>Clear all three stages and save the town!','The town is getting cleaner, but danger remains…<br><b>Head to the next stage!</b>','You cleared all three missions and made the town shine!<br><b>See what you achieved!</b>'],stages:[['Stage 1','Sorting & Recycling Quiz'],['Stage 2','Find Four Dangerous Items'],['Stage 3','Safety Puzzle']],locked:'Locked · Clear the previous stage',ready:'▶ Ready to play!',clear:'Cleared',result:'Final Results & Rankings',resultLocked:'Clear all 3 stages to unlock',resultReady:'See your title and join the rankings!',remaining:'Clear {n} more stage(s) to unlock',reset:'Reset progress',confirm:'Reset your progress. Are you sure?',cityAlt:['Town covered in trash','Partly cleaned town','Much cleaner town','Spotless town']},
+zh:{language:'语言',child:'幼儿模式',adult:'幼儿模式',title:'垃圾救援任务',city:'小镇清洁度',story:['这几年，镇上的危险垃圾越来越多……垃圾分类错误可能引发垃圾车起火，街道上也到处是垃圾。再这样下去，小镇会被垃圾淹没！<br><br><b>只有你能成为可靠的救援队员。</b><br>挑战三个关卡，守护小镇吧！','小镇的垃圾渐渐减少了，但危险还没有消失……<br><b>继续挑战下一关吧！</b>','你完成了三个任务，小镇焕然一新！<br><b>来看看你的最终成绩吧！</b>'],stages:[['第1关','垃圾分类与回收问答'],['第2关','寻找四种危险垃圾'],['第3关','安全知识问答']],locked:'尚未解锁 · 请先通关前一关',ready:'▶ 可以开始挑战！',clear:'已通关',result:'最终结果与排行榜',resultLocked:'通关全部3关后解锁',resultReady:'查看你的称号并加入排行榜吧！',remaining:'再通关{n}关即可解锁',reset:'重置游戏进度',confirm:'要重置游戏进度吗？',cityAlt:['垃圾遍地的小镇','稍微整洁的小镇','更加干净的小镇','焕然一新的小镇']},
+ko:{language:'언어',child:'유아용',adult:'유아용',title:'쓰레기 구조 퀘스트',city:'마을 청결도',story:['최근 마을에 위험한 쓰레기가 점점 늘고 있어요. 분리배출을 잘못하면 수거차에 불이 날 수도 있어요. 이대로라면 마을이 쓰레기로 뒤덮일 거예요!<br><br><b>마을을 구할 수 있는 사람은 바로 여러분이에요.</b><br>세 개의 스테이지에 도전해 마을을 지켜요!','마을의 쓰레기가 조금씩 줄고 있지만 위험은 아직 남아 있어요…<br><b>다음 스테이지로 가요!</b>','세 가지 미션을 모두 완료해 마을이 깨끗해졌어요!<br><b>활약의 결과를 확인해요!</b>'],stages:[['스테이지 1','분리배출·재활용 퀴즈'],['스테이지 2','위험한 쓰레기 네 가지 찾기'],['스테이지 3','안전 퀴즈']],locked:'잠김 · 이전 스테이지를 먼저 완료하세요',ready:'▶ 도전할 수 있어요!',clear:'완료',result:'최종 결과 및 랭킹',resultLocked:'스테이지 3개를 모두 완료하면 열려요',resultReady:'칭호를 확인하고 랭킹에 등록해요!',remaining:'스테이지 {n}개를 더 완료하면 열려요',reset:'진행 상황 초기화',confirm:'진행 상황을 초기화할까요?',cityAlt:['쓰레기로 뒤덮인 마을','조금 깨끗해진 마을','더 깨끗해진 마을','아주 깨끗한 마을']}};
+const GRQ_CHILD_STAGES=[['ステージ1','ごみの わけかたクイズ'],['ステージ2','あぶない ごみさがし'],['ステージ3','あんぜんクイズ']];
+let grqLang=new URLSearchParams(location.search).get('lang')||localStorage.getItem('grq_language')||'ja',grqChild=new URLSearchParams(location.search).get('toddler')==='1'||localStorage.getItem('grq_toddler')==='1';
+const grqOriginalRender=window.render;
+window.render=function(){grqOriginalRender();const c=GRQ_TEXT[grqLang]||GRQ_TEXT.ja;const p=loadProgress();let cleared=0;while(cleared<STAGES.length&&p['stage'+STAGES[cleared].num]&&p['stage'+STAGES[cleared].num].rank4)cleared++;
+ document.documentElement.lang=grqLang;document.title=c.title;document.querySelector('.g-title').textContent=c.title;document.getElementById('language-label').textContent=c.language;document.getElementById('language-select').setAttribute('aria-label',c.language);const tb=document.getElementById('toddler-toggle');tb.textContent=grqLang==='ja'?(grqChild?c.child:c.adult):c.child;tb.setAttribute('aria-pressed',String(grqChild));
+ const jpChild=grqLang==='ja'&&grqChild;document.getElementById('city-label').textContent=jpChild?c.childCity:c.city;const alts=c.cityAlt||GRQ_TEXT.ja.cityAlt;const cityImg=document.querySelector('#city-scene img');if(cityImg)cityImg.alt=alts[cleared];
+ const story=document.getElementById('story-text');story.innerHTML=jpChild?c.childStories[Math.min(cleared,2)]:c.story[Math.min(cleared,2)];
+ document.querySelectorAll('.stage-card').forEach((card,i)=>{const t=grqLang==='ja'&&grqChild?GRQ_CHILD_STAGES[i]:c.stages[i];card.querySelector('.sc-title').textContent=t[0]+'｜'+t[1];const status=card.querySelector('.sc-status');if(status){const prev=i<=cleared,done=prev&&!!(p['stage'+(i+1)]&&p['stage'+(i+1)].rank4);status.innerHTML=done?gi('check')+' ✓ '+(jpChild?c.childClear:c.clear):prev?(jpChild?c.childReady:c.ready):(jpChild?c.childLocked:c.locked);}});
+ document.getElementById('result-title').textContent=jpChild?c.childResult:c.result;document.getElementById('result-desc').textContent=jpChild?(cleared>=3?c.childResultReady:c.childRemaining.replace('{n}',3-cleared)):(cleared>=3?c.resultReady:c.remaining.replace('{n}',3-cleared));document.getElementById('btn-reset').textContent=jpChild?c.childReset:c.reset;
+};
+document.getElementById('language-select').value=grqLang;document.getElementById('language-select').addEventListener('change',e=>{grqLang=e.target.value;localStorage.setItem('grq_language',grqLang);render();});document.getElementById('toddler-toggle').addEventListener('click',()=>{grqChild=!grqChild;localStorage.setItem('grq_toddler',grqChild?'1':'0');render();});
+render();
+</script>
+
+<script>
+localStorage.setItem('grq_language',grqLang);const __routeRender=window.render;window.render=function(){__routeRender();const suf='_'+grqLang;document.querySelectorAll('.stage-card').forEach((a,i)=>{const childStage=(i<3&&grqLang==='ja'&&grqChild);a.href='gomi_rescue_stage'+(i+1)+(childStage?'_ja_child':suf)+'.html';});document.getElementById('result-card').href='gomi_rescue_result'+(grqLang==='ja'&&grqChild?'_ja_child':suf)+'.html';};render();
+</script>
+</body>
+</html>
