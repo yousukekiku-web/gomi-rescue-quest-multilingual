@@ -163,14 +163,17 @@ button,input,select,textarea{font-family:inherit}
 
 </div>
 
+<script src="grq_supabase_config.js"></script>
+<script src="grq_ranking_store.js"></script>
 <script>
 const PAGE_LANG="ja_child";
-const T={"title": "ごみれすきゅーくえすと｜みんなの らんきんぐ", "home": "ほーむへ", "refresh": "らんきんぐを あたらしくする", "heroTitle": "みんなの かつやく らんきんぐ", "heroCopy": "みんなが みつけた でんちを あつめる ばしょの きろくだよ。<br>おおきな がめんに うつして、みんなで みよう！", "loading": "らんきんぐを よみこんでいるよ…", "empty": "まだ だれも とうろくしていないよ。<br>さいしょの れすきゅーたいんに なろう！", "join": "きみの きろくを とうろく", "record": "きみの きろく", "details": "{name}さんの きろくを みる", "spot": "ばしょ", "score": "すこあ", "member": "れすきゅーたいん", "noSpots": "あつめる ばしょは まだ ないよ。", "detailSpots": "みつけた ばしょ", "result": "けっかを みる", "placeSep": " ・ ", "tiers": ["ごみわけの おてつだい", "れすきゅーの れんしゅうせい", "おそうじの たつじん", "まちを まもる れんじゃー", "えりーと れすきゅー", "おそうじの めいじん"]};
+const T={"title": "ごみれすきゅーくえすと｜みんなの らんきんぐ", "home": "ほーむへ", "refresh": "らんきんぐを あたらしくする", "heroTitle": "みんなの かつやく らんきんぐ", "heroCopy": "みんなが みつけた でんちを あつめる ばしょの きろくだよ。<br>おおきな がめんに うつして、みんなで みよう！", "loading": "らんきんぐを よみこんでいるよ…", "empty": "まだ だれも とうろくしていないよ。<br>さいしょの れすきゅーたいんに なろう！", "join": "きみの きろくを とうろく", "record": "きみの きろく", "details": "{name}さんの きろくを みる", "spot": "ばしょ", "score": "すこあ", "member": "れすきゅーたいん", "noSpots": "あつめる ばしょは まだ ないよ。", "detailSpots": "みつけた ばしょ", "result": "けっかを みる", "placeSep": " ・ ", "tiers": ["ごみわけの おてつだい", "れすきゅーの れんしゅうせい", "おそうじの たつじん", "まちを まもる れんじゃー", "えりーと れすきゅー", "おそうじの めいじん"], "error": "らんきんぐを よみこめなかったよ。すこし あとで もういちど みてね。"};
 let displayedEntries=[];
 const medals=['<img class="medal-img" src="assets/medal-gold.png?v=20261025" alt="1">','<img class="medal-img" src="assets/medal-silver.png?v=20261025" alt="2">','<img class="medal-img" src="assets/medal-bronze.png?v=20261025" alt="3">'];
 function qs(name){return new URLSearchParams(location.search).get(name)}
 function localizedTier(entry){const vals={S:4,A:3,B:2,C:1};const code=String(entry.code||'');if(code.length!==3||[...code].some(x=>!vals[x]))return T.tiers[0];const sum=[...code].reduce((n,x)=>n+vals[x],0);const idx=sum<=3?0:sum<=5?1:sum<=7?2:sum<=9?3:sum<=11?4:5;return T.tiers[idx]}
-async function renderBoard(){
+async function loadRanking(){return await window.GRQRankingStore.load();}
+async function renderBoardInternal(){
  const highlightTs=qs('ts')?Number(qs('ts')):null,list=await loadRanking();list.sort((a,b)=>b.totalScore-a.totalScore);const top=list.slice(0,20);displayedEntries=top;const boardEl=document.getElementById('board');
  if(!top.length){boardEl.innerHTML=`<div class="rc-empty">${T.empty}</div>`;return;}
  boardEl.innerHTML=top.map((e,i)=>{const locs=(e.locations&&e.locations.length)?e.locations:[],topCls=i===0?' top1':i===1?' top2':i===2?' top3':'',meCls=highlightTs&&e.ts===highlightTs?' me':'',charFallback=`<span>${escapeHtml(e.tierEmoji||'🧑')}</span>`;
@@ -185,6 +188,7 @@ function showDetail(entry){const locs=Array.isArray(entry.locations)?entry.locat
 }
 function closeDetail(){const modal=document.getElementById('detail-modal');modal.hidden=true;modal.setAttribute('aria-hidden','true');}
 document.title=T.title;document.getElementById('board').innerHTML=`<div class="rc-empty">${T.loading}</div>`;
+async function renderBoard(){try{await renderBoardInternal();}catch(err){console.error('Ranking load failed',err);document.getElementById('board').innerHTML=`<div class="rc-empty">${T.error}</div>`;}}
 renderBoard();
 document.getElementById('board').addEventListener('click',e=>{const card=e.target.closest('.rank-card');if(card)showDetail(displayedEntries[Number(card.dataset.entryIndex)]);});
 document.getElementById('board').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('rank-card')){e.preventDefault();showDetail(displayedEntries[Number(e.target.dataset.entryIndex)]);}});

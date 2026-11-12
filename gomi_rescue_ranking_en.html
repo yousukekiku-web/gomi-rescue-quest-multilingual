@@ -171,6 +171,8 @@ button,input,select,textarea{font-family:inherit}
 
 </div>
 
+<script src="grq_supabase_config.js"></script>
+<script src="grq_ranking_store.js"></script>
 <script>
 // ════════════════════════════════════════════════
 // データテーブル（gomi_rescue_result.html と同じロジックを使い、
@@ -281,44 +283,15 @@ function loadProgress(){
   catch(e){ return {}; }
 }
 
-// ════════════════════════════════════════════════
-// 共有ランキング保存（Artifact上ならwindow.storageで全員共有、
-// それ以外の環境ではブラウザ内ローカル保存にフォールバック）
-//
-// ★Supabase移行メモ：将来的にここをSupabaseに差し替える場合は、
-//   loadRanking() → supabase.from('grq_ranking').select('*').order('totalScore',{ascending:false})
-//   saveRanking(list) → 呼び出し側をinsert 1件（例：supabase.from('grq_ranking').insert(entry)）に変更する形が自然です。
-//   現状はリスト全体を読み書きする簡易実装なので、移行時はentry単位のinsert関数に置き換えてください。
-// ════════════════════════════════════════════════
-async function storageAvailable(){
-  return typeof window.storage !== 'undefined' && window.storage;
-}
-async function loadRanking(){
-  try{
-    if(await storageAvailable()){
-      const res = await window.storage.get('grq_ranking', true);
-      return res ? JSON.parse(res.value) : [];
-    }
-  }catch(e){}
-  try{ return JSON.parse(localStorage.getItem('grq_ranking_local') || '[]'); }
-  catch(e){ return []; }
-}
-async function saveRanking(list){
-  try{
-    if(await storageAvailable()){
-      await window.storage.set('grq_ranking', JSON.stringify(list), true);
-      return;
-    }
-  }catch(e){}
-  try{ localStorage.setItem('grq_ranking_local', JSON.stringify(list)); }catch(e){}
-}
+// Supabase共有ランキングへの新規レコード登録
+async function saveRanking(entry){return await window.GRQRankingStore.insert(entry);}
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 const PAGE_LANG="en";
 const CHILD_PREF={"北海道": "ほっかいどう", "青森県": "あおもりけん", "岩手県": "いわてけん", "宮城県": "みやぎけん", "秋田県": "あきたけん", "山形県": "やまがたけん", "福島県": "ふくしまけん", "茨城県": "いばらきけん", "栃木県": "とちぎけん", "群馬県": "ぐんまけん", "埼玉県": "さいたまけん", "千葉県": "ちばけん", "東京都": "とうきょうと", "神奈川県": "かながわけん", "新潟県": "にいがたけん", "富山県": "とやまけん", "石川県": "いしかわけん", "福井県": "ふくいけん", "山梨県": "やまなしけん", "長野県": "ながのけん", "岐阜県": "ぎふけん", "静岡県": "しずおかけん", "愛知県": "あいちけん", "三重県": "みえけん", "滋賀県": "しがけん", "京都府": "きょうとふ", "大阪府": "おおさかふ", "兵庫県": "ひょうごけん", "奈良県": "ならけん", "和歌山県": "わかやまけん", "鳥取県": "とっとりけん", "島根県": "しまねけん", "岡山県": "おかやまけん", "広島県": "ひろしまけん", "山口県": "やまぐちけん", "徳島県": "とくしまけん", "香川県": "かがわけん", "愛媛県": "えひめけん", "高知県": "こうちけん", "福岡県": "ふくおかけん", "佐賀県": "さがけん", "長崎県": "ながさきけん", "熊本県": "くまもとけん", "大分県": "おおいたけん", "宮崎県": "みやざきけん", "鹿児島県": "かこしまけん", "沖縄県": "おきなわけん"};
-const COPY={"en": {"title": "Gomi Rescue Quest | Register a Collection Spot", "home": "Home", "lockedTitle": "Registration is not ready yet", "lockedBody": "Clear all three stages to open the ranking registration page.", "heroTitle": "Find a lithium-ion battery collection point<br>in your community!", "heroCopy": "The game ends here. Now it is time to explore your own community.<br>Find a nearby collection partner and share it so your adventure can help your real community too.", "myResult": "YOUR CHARACTER", "viewResult": "View results ▶", "formTitle": "Join the ranking", "formIntro": "Enter your name and the collection places you found.<br>You can share places in other communities too.", "name": "Name (up to 12 characters)", "jbrc": "Search JBRC partner stores for collection points", "newTab": "Opens in a new tab ↗", "spots": "Add lithium-ion battery collection spots (Spot 1 required, up to 3)", "spot": "Collection spot", "required": "required", "optional": "optional", "pref": "Prefecture", "city": "City / ward / town", "place": "Store or collection point name (optional)", "hint": "Tip: Use the store name and address shown in the JBRC search popup.", "register": "Register on the ranking", "boardTitle": "Community ranking", "board": "View the battery collection spot ranking", "boardSmall": "See your record and character on the leaderboard", "restart": "Start over", "nameError": "Please enter a name.", "spot1Error": "Prefecture and city/ward are required for Spot 1. Try the JBRC search.", "spotNError": "For Spot {n}, enter both prefecture and city/ward. Store name is optional.", "saving": "Registering…", "saved": "Registered! Opening the leaderboard…", "confirm": "Reset your progress and start over?", "tiers": ["Community Helper", "Rescue Trainee", "Skilled Cleaner", "City Rescue Ranger", "Elite Rescue Member", "Master of Clean-up"], "rare": "Super Rare Rescue Hero!"}};
+const COPY={"en": {"title": "Gomi Rescue Quest | Register a Collection Spot", "home": "Home", "lockedTitle": "Registration is not ready yet", "lockedBody": "Clear all three stages to open the ranking registration page.", "heroTitle": "Find a lithium-ion battery collection point<br>in your community!", "heroCopy": "The game ends here. Now it is time to explore your own community.<br>Find a nearby collection partner and share it so your adventure can help your real community too.", "myResult": "YOUR CHARACTER", "viewResult": "View results ▶", "formTitle": "Join the ranking", "formIntro": "Enter your name and the collection places you found.<br>You can share places in other communities too.", "name": "Name (up to 12 characters)", "jbrc": "Search JBRC partner stores for collection points", "newTab": "Opens in a new tab ↗", "spots": "Add lithium-ion battery collection spots (Spot 1 required, up to 3)", "spot": "Collection spot", "required": "required", "optional": "optional", "pref": "Prefecture", "city": "City / ward / town", "place": "Store or collection point name (optional)", "hint": "Tip: Use the store name and address shown in the JBRC search popup.", "register": "Register on the ranking", "boardTitle": "Community ranking", "board": "View the battery collection spot ranking", "boardSmall": "See your record and character on the leaderboard", "restart": "Start over", "nameError": "Please enter a name.", "spot1Error": "Prefecture and city/ward are required for Spot 1. Try the JBRC search.", "spotNError": "For Spot {n}, enter both prefecture and city/ward. Store name is optional.", "saving": "Registering…", "saved": "Registered! Opening the leaderboard…", "confirm": "Reset your progress and start over?", "tiers": ["Community Helper", "Rescue Trainee", "Skilled Cleaner", "City Rescue Ranger", "Elite Rescue Member", "Master of Clean-up"], "rare": "Super Rare Rescue Hero!", "saveError": "Could not register your record. Please check your connection and try again."}};
 async function main(){
  const t=COPY[PAGE_LANG],p=loadProgress(),s1=p.stage1,s2=p.stage2,s3=p.stage3,content=document.getElementById('content');
  const lang=PAGE_LANG==='ja_child'?'ja':PAGE_LANG,homeHref=`gomi_rescue_start.html?lang=${lang}${PAGE_LANG==='ja_child'?'&toddler=1':''}`;
@@ -328,7 +301,7 @@ async function main(){
  const variant=!rare?(TIER_VARIANTS[tierIndex].find(v=>v.id===roll.variantId)||TIER_VARIANTS[tierIndex][0]):null;
  const cardEmoji=rare?rare.emoji:variant.emoji,cardTitle=rare?t.rare:t.tiers[tierIndex],imgKey=rare?`rare_${rare.id}`:variant.id;
  const tierOrder=['D','C','B','A','S'];
- const rankingHref=PAGE_LANG==='ja_child'?'gomi_rescue_leaderboard_ja.html':`gomi_rescue_leaderboard_${PAGE_LANG}.html`;
+ const rankingHref=PAGE_LANG==='ja_child'?'gomi_rescue_leaderboard_ja_child.html':`gomi_rescue_leaderboard_${PAGE_LANG}.html`;
  const resultHref=PAGE_LANG==='ja_child'?'gomi_rescue_result_ja_child.html':`gomi_rescue_result_${PAGE_LANG}.html`;
  content.innerHTML=`<div class="hero"><div class="hero-emoji"><img src="assets/logo-battery.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🔋'))">${gi('pin')}</div><div class="hero-title">${t.heroTitle}</div><div class="hero-copy">${t.heroCopy}</div></div>
  <a href="${resultHref}" class="me-chip"><div class="mc-icon" id="me-chip-icon"><span>${cardEmoji}</span></div><div class="mc-body"><div class="mc-label">${t.myResult}</div><div class="mc-title">${cardTitle}</div></div><div class="mc-arrow">${t.viewResult}</div></a>
@@ -347,7 +320,7 @@ async function main(){
   for(let i=1;i<3;i++){const b=blocks[i],hasAny=b.prefecture||b.city||b.place;if(hasAny&&(!b.prefecture||!b.city)){note.textContent=t.spotNError.replace('{n}',String(i+1));note.style.color='#ff5a4d';return;}}
   const locations=blocks.filter(b=>b.prefecture&&b.city).slice(0,3),btn=document.getElementById('btn-register');btn.disabled=true;btn.textContent=t.saving;
   const entry={name:name.slice(0,12),code,tier:cardTitle,tierEmoji:cardEmoji,imgKey,rare:!!rare,locations:locations.map(l=>({prefecture:l.prefecture,city:l.city.slice(0,20),place:l.place.slice(0,30)})),totalScore:sum*1000+(s1.score||0)+(s2.found||0)*50+(s3.correct||0)*50,ts:Date.now()};
-  const list=await loadRanking();list.push(entry);await saveRanking(list);note.textContent=t.saved;note.style.color='#1f9c53';setTimeout(()=>{location.href=rankingHref+'?ts='+entry.ts;},700);
+  try{await saveRanking(entry);note.textContent=t.saved;note.style.color='#1f9c53';setTimeout(()=>{location.href=rankingHref+'?ts='+entry.ts;},700);}catch(err){console.error('Ranking registration failed',err);btn.disabled=false;btn.textContent=t.register;note.textContent=t.saveError||'Could not register. Please try again.';note.style.color='#ff5a4d';}
  });
  document.getElementById('btn-restart').addEventListener('click',()=>{if(confirm(t.confirm)){try{localStorage.removeItem('grq_progress');}catch(e){}location.href=homeHref;}});
 }

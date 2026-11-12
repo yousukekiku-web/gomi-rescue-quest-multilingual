@@ -163,6 +163,8 @@ button,input,select,textarea{font-family:inherit}
 
 </div>
 
+<script src="grq_supabase_config.js"></script>
+<script src="grq_ranking_store.js"></script>
 <script>
 const medals = ['<img class="medal-img" src="assets/medal-gold.png?v=20261025" alt="1位" onerror="this.replaceWith(document.createTextNode(\'🥇\'))">', '<img class="medal-img" src="assets/medal-silver.png?v=20261025" alt="2位" onerror="this.replaceWith(document.createTextNode(\'🥈\'))">', '<img class="medal-img" src="assets/medal-bronze.png?v=20261025" alt="3位" onerror="this.replaceWith(document.createTextNode(\'🥉\'))">'];
 let displayedEntries = [];
@@ -170,16 +172,7 @@ let displayedEntries = [];
 async function storageAvailable(){
   return typeof window.storage !== 'undefined' && window.storage;
 }
-async function loadRanking(){
-  try{
-    if(await storageAvailable()){
-      const res = await window.storage.get('grq_ranking', true);
-      return res ? JSON.parse(res.value) : [];
-    }
-  }catch(e){}
-  try{ return JSON.parse(localStorage.getItem('grq_ranking_local') || '[]'); }
-  catch(e){ return []; }
-}
+async function loadRanking(){return await window.GRQRankingStore.load();}
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -188,7 +181,7 @@ function qs(name){
   return new URLSearchParams(location.search).get(name);
 }
 
-async function renderBoard(){
+async function renderBoardInternal(){
   const highlightTs = qs('ts') ? Number(qs('ts')) : null;
   const list = await loadRanking();
   list.sort((a,b)=>b.totalScore-a.totalScore);
@@ -233,6 +226,7 @@ async function renderBoard(){
     if(meEl) meEl.scrollIntoView({behavior:'smooth', block:'center'});
   }
 }
+async function renderBoard(){try{await renderBoardInternal();}catch(err){console.error('Ranking load failed',err);document.getElementById('board').innerHTML=`<div class="rc-empty">${"ランキングを読み込めませんでした。時間をおいて再読み込みしてください。"}</div>`;}}
 renderBoard();
 
 function showDetail(entry){

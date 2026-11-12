@@ -171,6 +171,8 @@ button,input,select,textarea{font-family:inherit}
 
 </div>
 
+<script src="grq_supabase_config.js"></script>
+<script src="grq_ranking_store.js"></script>
 <script>
 // ════════════════════════════════════════════════
 // データテーブル（gomi_rescue_result.html と同じロジックを使い、
@@ -281,44 +283,15 @@ function loadProgress(){
   catch(e){ return {}; }
 }
 
-// ════════════════════════════════════════════════
-// 共有ランキング保存（Artifact上ならwindow.storageで全員共有、
-// それ以外の環境ではブラウザ内ローカル保存にフォールバック）
-//
-// ★Supabase移行メモ：将来的にここをSupabaseに差し替える場合は、
-//   loadRanking() → supabase.from('grq_ranking').select('*').order('totalScore',{ascending:false})
-//   saveRanking(list) → 呼び出し側をinsert 1件（例：supabase.from('grq_ranking').insert(entry)）に変更する形が自然です。
-//   現状はリスト全体を読み書きする簡易実装なので、移行時はentry単位のinsert関数に置き換えてください。
-// ════════════════════════════════════════════════
-async function storageAvailable(){
-  return typeof window.storage !== 'undefined' && window.storage;
-}
-async function loadRanking(){
-  try{
-    if(await storageAvailable()){
-      const res = await window.storage.get('grq_ranking', true);
-      return res ? JSON.parse(res.value) : [];
-    }
-  }catch(e){}
-  try{ return JSON.parse(localStorage.getItem('grq_ranking_local') || '[]'); }
-  catch(e){ return []; }
-}
-async function saveRanking(list){
-  try{
-    if(await storageAvailable()){
-      await window.storage.set('grq_ranking', JSON.stringify(list), true);
-      return;
-    }
-  }catch(e){}
-  try{ localStorage.setItem('grq_ranking_local', JSON.stringify(list)); }catch(e){}
-}
+// Supabase共有ランキングへの新規レコード登録
+async function saveRanking(entry){return await window.GRQRankingStore.insert(entry);}
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 const PAGE_LANG="ja_child";
 const CHILD_PREF={"北海道": "ほっかいどう", "青森県": "あおもりけん", "岩手県": "いわてけん", "宮城県": "みやぎけん", "秋田県": "あきたけん", "山形県": "やまがたけん", "福島県": "ふくしまけん", "茨城県": "いばらきけん", "栃木県": "とちぎけん", "群馬県": "ぐんまけん", "埼玉県": "さいたまけん", "千葉県": "ちばけん", "東京都": "とうきょうと", "神奈川県": "かながわけん", "新潟県": "にいがたけん", "富山県": "とやまけん", "石川県": "いしかわけん", "福井県": "ふくいけん", "山梨県": "やまなしけん", "長野県": "ながのけん", "岐阜県": "ぎふけん", "静岡県": "しずおかけん", "愛知県": "あいちけん", "三重県": "みえけん", "滋賀県": "しがけん", "京都府": "きょうとふ", "大阪府": "おおさかふ", "兵庫県": "ひょうごけん", "奈良県": "ならけん", "和歌山県": "わかやまけん", "鳥取県": "とっとりけん", "島根県": "しまねけん", "岡山県": "おかやまけん", "広島県": "ひろしまけん", "山口県": "やまぐちけん", "徳島県": "とくしまけん", "香川県": "かがわけん", "愛媛県": "えひめけん", "高知県": "こうちけん", "福岡県": "ふくおかけん", "佐賀県": "さがけん", "長崎県": "ながさきけん", "熊本県": "くまもとけん", "大分県": "おおいたけん", "宮崎県": "みやざきけん", "鹿児島県": "かこしまけん", "沖縄県": "おきなわけん"};
-const COPY={"ja_child": {"title": "ごみれすきゅーくえすと｜とうろく", "home": "ほーむへ", "lockedTitle": "まだ とうろくできないよ", "lockedBody": "3つの すてーじを ぜんぶ くりあすると、らんきんぐに とうろくできるよ。", "heroTitle": "まちのでんちを あつめる ばしょを さがそう！", "heroCopy": "げーむは ここまで。つぎは きみの まちで さがしてみよう。<br>ちかくの おみせを みつけて とうろくすると、ほんとうの まちも たすけられるよ。", "myResult": "きみの なかま", "viewResult": "けっかを みる ▶", "formTitle": "らんきんぐに のせよう", "formIntro": "なまえと、みつけた ばしょを かいてね。<br>ほかの まちで みつけた ばしょでも いいよ。", "name": "なまえ（12もじまで）", "jbrc": "JBRCのおみせさがしで ばしょを みる", "newTab": "あたらしい ぺーじで ひらく ↗", "spots": "でんちを あつめる ばしょ（1つめは ひっす、さいだい3つ）", "spot": "あつめる ばしょ", "required": "ひっす", "optional": "どちらでも", "pref": "けん", "city": "し・く・まち・むら", "place": "おみせや ばしょの なまえ（かかなくてもよい）", "hint": "ひんと：JBRCの まどにでる おみせの なまえや じゅうしょを みてね。", "register": "らんきんぐに とうろく", "boardTitle": "みんなの らんきんぐ", "board": "でんちを あつめる ばしょを みる", "boardSmall": "きろくと なかまを らんきんぐで みよう", "restart": "さいしょから あそぶ", "nameError": "なまえを いれてね。", "spot1Error": "1つめは けんと し・く・まち・むらを いれてね。JBRCで さがしてみよう。", "spotNError": "{n}つめは けんと し・く・まち・むらを いれてね。おみせの なまえは かかなくても いいよ。", "saving": "とうろく しているよ…", "saved": "とうろくしたよ！らんきんぐを ひらくね…", "confirm": "いままでの きろくを けして、さいしょから はじめる？", "tiers": ["ごみわけの おてつだい", "れすきゅーの れんしゅうせい", "おそうじの たつじん", "まちを まもる れんじゃー", "えりーと れすきゅー", "おそうじの めいじん"], "rare": "とっても めずらしい なかま！"}};
+const COPY={"ja_child": {"title": "ごみれすきゅーくえすと｜とうろく", "home": "ほーむへ", "lockedTitle": "まだ とうろくできないよ", "lockedBody": "3つの すてーじを ぜんぶ くりあすると、らんきんぐに とうろくできるよ。", "heroTitle": "まちのでんちを あつめる ばしょを さがそう！", "heroCopy": "げーむは ここまで。つぎは きみの まちで さがしてみよう。<br>ちかくの おみせを みつけて とうろくすると、ほんとうの まちも たすけられるよ。", "myResult": "きみの なかま", "viewResult": "けっかを みる ▶", "formTitle": "らんきんぐに のせよう", "formIntro": "なまえと、みつけた ばしょを かいてね。<br>ほかの まちで みつけた ばしょでも いいよ。", "name": "なまえ（12もじまで）", "jbrc": "JBRCのおみせさがしで ばしょを みる", "newTab": "あたらしい ぺーじで ひらく ↗", "spots": "でんちを あつめる ばしょ（1つめは ひっす、さいだい3つ）", "spot": "あつめる ばしょ", "required": "ひっす", "optional": "どちらでも", "pref": "けん", "city": "し・く・まち・むら", "place": "おみせや ばしょの なまえ（かかなくてもよい）", "hint": "ひんと：JBRCの まどにでる おみせの なまえや じゅうしょを みてね。", "register": "らんきんぐに とうろく", "boardTitle": "みんなの らんきんぐ", "board": "でんちを あつめる ばしょを みる", "boardSmall": "きろくと なかまを らんきんぐで みよう", "restart": "さいしょから あそぶ", "nameError": "なまえを いれてね。", "spot1Error": "1つめは けんと し・く・まち・むらを いれてね。JBRCで さがしてみよう。", "spotNError": "{n}つめは けんと し・く・まち・むらを いれてね。おみせの なまえは かかなくても いいよ。", "saving": "とうろく しているよ…", "saved": "とうろくしたよ！らんきんぐを ひらくね…", "confirm": "いままでの きろくを けして、さいしょから はじめる？", "tiers": ["ごみわけの おてつだい", "れすきゅーの れんしゅうせい", "おそうじの たつじん", "まちを まもる れんじゃー", "えりーと れすきゅー", "おそうじの めいじん"], "rare": "とっても めずらしい なかま！", "saveError": "とうろくできなかったよ。つうしんをたしかめて、もういちどやってみてね。"}};
 async function main(){
  const t=COPY[PAGE_LANG],p=loadProgress(),s1=p.stage1,s2=p.stage2,s3=p.stage3,content=document.getElementById('content');
  const lang=PAGE_LANG==='ja_child'?'ja':PAGE_LANG,homeHref=`gomi_rescue_start.html?lang=${lang}${PAGE_LANG==='ja_child'?'&toddler=1':''}`;
@@ -347,7 +320,7 @@ async function main(){
   for(let i=1;i<3;i++){const b=blocks[i],hasAny=b.prefecture||b.city||b.place;if(hasAny&&(!b.prefecture||!b.city)){note.textContent=t.spotNError.replace('{n}',String(i+1));note.style.color='#ff5a4d';return;}}
   const locations=blocks.filter(b=>b.prefecture&&b.city).slice(0,3),btn=document.getElementById('btn-register');btn.disabled=true;btn.textContent=t.saving;
   const entry={name:name.slice(0,12),code,tier:cardTitle,tierEmoji:cardEmoji,imgKey,rare:!!rare,locations:locations.map(l=>({prefecture:l.prefecture,city:l.city.slice(0,20),place:l.place.slice(0,30)})),totalScore:sum*1000+(s1.score||0)+(s2.found||0)*50+(s3.correct||0)*50,ts:Date.now()};
-  const list=await loadRanking();list.push(entry);await saveRanking(list);note.textContent=t.saved;note.style.color='#1f9c53';setTimeout(()=>{location.href=rankingHref+'?ts='+entry.ts;},700);
+  try{await saveRanking(entry);note.textContent=t.saved;note.style.color='#1f9c53';setTimeout(()=>{location.href=rankingHref+'?ts='+entry.ts;},700);}catch(err){console.error('Ranking registration failed',err);btn.disabled=false;btn.textContent=t.register;note.textContent=t.saveError||'Could not register. Please try again.';note.style.color='#ff5a4d';}
  });
  document.getElementById('btn-restart').addEventListener('click',()=>{if(confirm(t.confirm)){try{localStorage.removeItem('grq_progress');}catch(e){}location.href=homeHref;}});
 }

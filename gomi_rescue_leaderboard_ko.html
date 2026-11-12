@@ -163,14 +163,17 @@ button,input,select,textarea{font-family:inherit}
 
 </div>
 
+<script src="grq_supabase_config.js"></script>
+<script src="grq_ranking_store.js"></script>
 <script>
 const PAGE_LANG="ko";
-const T={"title": "고미 구조 퀘스트 | 모두의 랭킹", "home": "홈으로", "refresh": "랭킹 새로고침", "heroTitle": "모두의 구조 기록", "heroCopy": "구조 대원들이 찾아낸 배터리 회수 장소를 기록했어요.<br>큰 화면에 띄워 함께 공유해 보세요!", "loading": "랭킹을 불러오는 중…", "empty": "아직 등록한 사람이 없어요.<br>첫 번째 구조 대원이 되어 주세요!", "join": "내 기록 등록하기", "record": "내 기록", "details": "{name}님의 자세한 기록 보기", "spot": "장소", "score": "점수", "member": "구조 대원", "noSpots": "등록된 회수 장소가 없어요.", "detailSpots": "찾은 회수 장소", "result": "결과 보기", "placeSep": " · ", "tiers": ["동네 도우미", "구조대 연습생", "능숙한 청소 대원", "도시 구조 레인저", "엘리트 구조 대원", "청소의 달인"]};
+const T={"title": "고미 구조 퀘스트 | 모두의 랭킹", "home": "홈으로", "refresh": "랭킹 새로고침", "heroTitle": "모두의 구조 기록", "heroCopy": "구조 대원들이 찾아낸 배터리 회수 장소를 기록했어요.<br>큰 화면에 띄워 함께 공유해 보세요!", "loading": "랭킹을 불러오는 중…", "empty": "아직 등록한 사람이 없어요.<br>첫 번째 구조 대원이 되어 주세요!", "join": "내 기록 등록하기", "record": "내 기록", "details": "{name}님의 자세한 기록 보기", "spot": "장소", "score": "점수", "member": "구조 대원", "noSpots": "등록된 회수 장소가 없어요.", "detailSpots": "찾은 회수 장소", "result": "결과 보기", "placeSep": " · ", "tiers": ["동네 도우미", "구조대 연습생", "능숙한 청소 대원", "도시 구조 레인저", "엘리트 구조 대원", "청소의 달인"], "error": "랭킹을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."};
 let displayedEntries=[];
 const medals=['<img class="medal-img" src="assets/medal-gold.png?v=20261025" alt="1">','<img class="medal-img" src="assets/medal-silver.png?v=20261025" alt="2">','<img class="medal-img" src="assets/medal-bronze.png?v=20261025" alt="3">'];
 function qs(name){return new URLSearchParams(location.search).get(name)}
 function localizedTier(entry){const vals={S:4,A:3,B:2,C:1};const code=String(entry.code||'');if(code.length!==3||[...code].some(x=>!vals[x]))return T.tiers[0];const sum=[...code].reduce((n,x)=>n+vals[x],0);const idx=sum<=3?0:sum<=5?1:sum<=7?2:sum<=9?3:sum<=11?4:5;return T.tiers[idx]}
-async function renderBoard(){
+async function loadRanking(){return await window.GRQRankingStore.load();}
+async function renderBoardInternal(){
  const highlightTs=qs('ts')?Number(qs('ts')):null,list=await loadRanking();list.sort((a,b)=>b.totalScore-a.totalScore);const top=list.slice(0,20);displayedEntries=top;const boardEl=document.getElementById('board');
  if(!top.length){boardEl.innerHTML=`<div class="rc-empty">${T.empty}</div>`;return;}
  boardEl.innerHTML=top.map((e,i)=>{const locs=(e.locations&&e.locations.length)?e.locations:[],topCls=i===0?' top1':i===1?' top2':i===2?' top3':'',meCls=highlightTs&&e.ts===highlightTs?' me':'',charFallback=`<span>${escapeHtml(e.tierEmoji||'🧑')}</span>`;
@@ -185,6 +188,7 @@ function showDetail(entry){const locs=Array.isArray(entry.locations)?entry.locat
 }
 function closeDetail(){const modal=document.getElementById('detail-modal');modal.hidden=true;modal.setAttribute('aria-hidden','true');}
 document.title=T.title;document.getElementById('board').innerHTML=`<div class="rc-empty">${T.loading}</div>`;
+async function renderBoard(){try{await renderBoardInternal();}catch(err){console.error('Ranking load failed',err);document.getElementById('board').innerHTML=`<div class="rc-empty">${T.error}</div>`;}}
 renderBoard();
 document.getElementById('board').addEventListener('click',e=>{const card=e.target.closest('.rank-card');if(card)showDetail(displayedEntries[Number(card.dataset.entryIndex)]);});
 document.getElementById('board').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('rank-card')){e.preventDefault();showDetail(displayedEntries[Number(e.target.dataset.entryIndex)]);}});

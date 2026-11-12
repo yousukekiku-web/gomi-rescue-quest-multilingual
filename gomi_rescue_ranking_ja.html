@@ -171,6 +171,8 @@ button,input,select,textarea{font-family:inherit}
 
 </div>
 
+<script src="grq_supabase_config.js"></script>
+<script src="grq_ranking_store.js"></script>
 <script>
 // ════════════════════════════════════════════════
 // データテーブル（gomi_rescue_result.html と同じロジックを使い、
@@ -281,37 +283,8 @@ function loadProgress(){
   catch(e){ return {}; }
 }
 
-// ════════════════════════════════════════════════
-// 共有ランキング保存（Artifact上ならwindow.storageで全員共有、
-// それ以外の環境ではブラウザ内ローカル保存にフォールバック）
-//
-// ★Supabase移行メモ：将来的にここをSupabaseに差し替える場合は、
-//   loadRanking() → supabase.from('grq_ranking').select('*').order('totalScore',{ascending:false})
-//   saveRanking(list) → 呼び出し側をinsert 1件（例：supabase.from('grq_ranking').insert(entry)）に変更する形が自然です。
-//   現状はリスト全体を読み書きする簡易実装なので、移行時はentry単位のinsert関数に置き換えてください。
-// ════════════════════════════════════════════════
-async function storageAvailable(){
-  return typeof window.storage !== 'undefined' && window.storage;
-}
-async function loadRanking(){
-  try{
-    if(await storageAvailable()){
-      const res = await window.storage.get('grq_ranking', true);
-      return res ? JSON.parse(res.value) : [];
-    }
-  }catch(e){}
-  try{ return JSON.parse(localStorage.getItem('grq_ranking_local') || '[]'); }
-  catch(e){ return []; }
-}
-async function saveRanking(list){
-  try{
-    if(await storageAvailable()){
-      await window.storage.set('grq_ranking', JSON.stringify(list), true);
-      return;
-    }
-  }catch(e){}
-  try{ localStorage.setItem('grq_ranking_local', JSON.stringify(list)); }catch(e){}
-}
+// Supabase共有ランキングへの新規レコード登録
+async function saveRanking(entry){return await window.GRQRankingStore.insert(entry);}
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -398,7 +371,7 @@ async function main(){
 
     <div class="ranking">
       <div class="ranking-title"><img class="ti" src="assets/medal-gold.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🏅'))">みんなのランキング</div>
-      <a href="gomi_rescue_leaderboard.html" class="btn-view-board">
+      <a href="gomi_rescue_leaderboard_ja.html" class="btn-view-board">
         <span class="ti-wrap"><img src="assets/logo-battery.png?v=20261025" alt="" onerror="this.replaceWith(document.createTextNode('🔋'))"></span><span class="vb-text">リチウム電池回収スポット・<wbr>ランキングを見る</span>
         <small>登録したキミの記録も、大きなキャラクターで確認できます</small>
       </a>
@@ -460,12 +433,7 @@ async function main(){
       totalScore: totalScore,
       ts: Date.now()
     };
-    const list = await loadRanking();
-    list.push(entry);
-    await saveRanking(list);
-    note.textContent = '登録しました！ランキングページへ移動します…';
-    note.style.color = '#1f9c53';
-    setTimeout(()=>{ location.href = 'gomi_rescue_leaderboard.html?ts='+entry.ts; }, 700);
+    try{await saveRanking(entry);note.textContent='登録しました！ランキングページへ移動します…';note.style.color='#1f9c53';setTimeout(()=>{location.href='gomi_rescue_leaderboard_ja.html?ts='+entry.ts;},700);}catch(err){console.error('Ranking registration failed',err);btn.disabled=false;btn.textContent='ランキングに登録する';note.textContent='登録できませんでした。通信状態を確認して、もう一度お試しください。';note.style.color='#ff5a4d';}
   });
 
   document.getElementById('btn-restart').addEventListener('click', ()=>{
