@@ -780,23 +780,27 @@ const VOICE_DATA = {
 };
 
 const VOICE_BASE = 'gomi_rescue_assets_audio/';
+const VOICE_LOCALE = 'ko';
+const LOCAL_VOICE_KEYS = new Set(['broken-dish', 'glass-shards', 'bin_fire', 'cardboard', 'ceramic-shards', 'can', 'banana', 'glass-bottle', 'bin_wait', 'leftover-rice', 'magazine', 'newspaper', 'bin_nonburn', 'pet-bottle', 'bin_resource', 'paper', 'earbuds', 'mobile-battery', 'lighter', 'battery', 'alcohol-gel', 'spray-can']);
 const voiceCache = {};
 let voiceMuted = false;
 
 function playVoice(key){
   if(voiceMuted || !key) return;
+  const src = LOCAL_VOICE_KEYS.has(key)
+    ? `${VOICE_BASE}${VOICE_LOCALE}/${key}.wav`
+    : null;
+  // 他言語ページでは、日本語の埋め込み音声へ誤ってフォールバックしない。
+  if(!src) return;
   try{
     let a = voiceCache[key];
     if(!a){
-      // 埋め込み済み（base64）の音声があればそれを優先。
-      // 無ければ従来通りフォルダから読み込む（bin_*系など、まだ未着手のもの用）。
-      const src = VOICE_DATA[key] ? VOICE_DATA[key] : (VOICE_BASE + key + '.mp3');
       a = new Audio(src);
       a.preload = 'auto';
       voiceCache[key] = a;
     }
     a.currentTime = 0;
-    a.play().catch(()=>{}); // ファイル未配置・再生失敗時は静かに無視
+    a.play().catch(()=>{});
   }catch(e){ /* noop */ }
 }
 
