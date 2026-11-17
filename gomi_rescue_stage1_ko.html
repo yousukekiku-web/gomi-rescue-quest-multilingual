@@ -1027,7 +1027,8 @@ function playOptionLetter(letter){
 let lastSortCue='';
 let lastSortCueAt=0;
 function playSortCategoryCue(binKey){
-  if(!listenMode || !BIN_VOICE_KEY[binKey]) return;
+  // Sorting labels remain available even when quiz narration is disabled.
+  if(!BIN_VOICE_KEY[binKey]) return;
   const now=Date.now();
   // Pointer entry and keyboard focus may occur together; avoid duplicate playback.
   if(lastSortCue===binKey && now-lastSortCueAt<350) return;
@@ -1105,7 +1106,7 @@ function renderQuizOptions(opts, onPick){
     btn.dataset.optionLetter=letter;
     btn.setAttribute('aria-label',letter+'. '+opt);
     btn.textContent=(listenMode?letter:String(idx+1))+'. '+opt;
-    btn.addEventListener('pointerenter',()=>playOptionLetter(letter));
+    btn.addEventListener('mouseover',()=>playOptionLetter(letter));
     btn.addEventListener('focus',()=>playOptionLetter(letter));
     btn.addEventListener('click',()=>{
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
@@ -1300,7 +1301,7 @@ function triggerRecovery(){
     btn.dataset.optionLetter=letter;
     btn.setAttribute('aria-label',letter+'. '+opt);
     btn.textContent=(listenMode?letter:String(idx+1))+'. '+opt;
-    btn.addEventListener('pointerenter',()=>playOptionLetter(letter));
+    btn.addEventListener('mouseover',()=>playOptionLetter(letter));
     btn.addEventListener('focus',()=>playOptionLetter(letter));
     btn.addEventListener('click',()=>{
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
@@ -1424,7 +1425,7 @@ document.getElementById('bin-wait').addEventListener('click',()=>handleSort('wai
 ['fire','nonburn','resource','wait'].forEach(binKey=>{
   const button=document.getElementById(`bin-${binKey}`);
   if(!button) return;
-  button.addEventListener('pointerenter',()=>playSortCategoryCue(binKey));
+  button.addEventListener('mouseover',()=>playSortCategoryCue(binKey));
   button.addEventListener('focus',()=>playSortCategoryCue(binKey));
 });
 
