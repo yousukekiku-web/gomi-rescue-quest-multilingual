@@ -273,9 +273,15 @@ body{background:linear-gradient(180deg,var(--sky),var(--skydeep));display:flex;a
   90%{transform:translate(-2px,1px);}
 }
 
+
++.listen-mode-btn{position:fixed;top:max(env(safe-area-inset-top),10px);right:12px;z-index:1000;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);border:2px solid #7653c8;color:#302543;font-size:23px;box-shadow:0 3px 10px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s,background .15s,color .15s}
++.listen-mode-btn:active{transform:scale(.9)}
++.listen-mode-btn.active{background:#7653c8;color:#fff;box-shadow:0 0 0 3px rgba(118,83,200,.25),0 3px 10px rgba(0,0,0,.2)}
++.listen-mode-btn:focus-visible,.bgm-btn:focus-visible{outline:3px solid #17152b;outline-offset:3px}
++
 /* ===== BGM TOGGLE ===== */
 .bgm-btn{
-  position:fixed;top:max(env(safe-area-inset-top),10px);right:12px;z-index:999;
+  position:fixed;top:calc(max(env(safe-area-inset-top), 10px) + 52px);right:12px;z-index:999;
   width:42px;height:42px;border-radius:50%;
   background:rgba(255,255,255,.85);border:none;
   font-size:19px;box-shadow:0 3px 10px rgba(0,0,0,.15);
@@ -414,6 +420,7 @@ button,a[role="button"]{touch-action:manipulation}
 <script>function gi(id,cls){return '<svg class="gi'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-'+id+'"/></svg>';}var GI_FIRE='<img class="gi" src="assets/bin-burn.png?v=20261025" alt="">',GI_TRUCK='<img class="ci-img" src="assets/truck.png?v=20261025" alt="">';</script>
 
 
+<button id="listen-mode-toggle" class="listen-mode-btn" type="button" aria-label="目で見ず、音を聞いて答えるモード" title="目で見ず、音を聞いて答えるモード" aria-pressed="false">👂</button>
 <button id="bgm-toggle" class="bgm-btn" aria-label="BGM on/off"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sound-on"/></svg></button>
 <a href="gomi_rescue_start.html" class="home-link" aria-label="ホームへ" title="ホームへ"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></a>
 
@@ -708,6 +715,7 @@ const DANGER_ITEMS = [
 let hp, timer, score, combo, maxCombo, pinch, correctCount, totalCount, dangerFound, dangerTotal;
 let timerHandle, gameActive, sortLocked;
 let currentItem, currentIsDanger;
+let listenMode=false, activeQuizNumber=1, startInProgress=false, currentRecoveryItem=null;
 let missedDangerItems = [];
 let recoveryUsed = false;
 let q1Correct = false;
@@ -725,7 +733,7 @@ function updateHUD(){
   document.getElementById('hp-fill').style.width=Math.max(0,hp)+'%';
   const hpFill=document.getElementById('hp-fill');
   hpFill.style.background = hp>50 ? 'linear-gradient(90deg,#5edd7a,#8ef07a)' : hp>20 ? 'linear-gradient(90deg,#ffcf4d,#ffe08a)' : 'linear-gradient(90deg,#ff5a5a,#ff8a8a)';
-  document.getElementById('h-timer').textContent=Math.max(0,Math.ceil(timer));
+  document.getElementById('h-timer').textContent=listenMode ? '∞' : Math.max(0,Math.ceil(timer));
   document.getElementById('h-score').textContent=score.toLocaleString();
   document.getElementById('h-combo').textContent='×'+combo;
   document.getElementById('pinch-fill').style.width=Math.min(100,pinch)+'%';
@@ -780,24 +788,44 @@ const VOICE_DATA = {
 };
 
 const VOICE_BASE = 'gomi_rescue_assets_audio/';
+const VOICE_LOCALE = 'ja';
+const LOCAL_VOICE_KEYS = new Set(['S1-001', 'S1-D-01-Q01', 'S1-D-01-A01', 'S1-D-01-Q02', 'S1-D-01-A02', 'S1-D-01-TIP', 'S1-D-02-Q01', 'S1-D-02-A01', 'S1-D-02-Q02', 'S1-D-02-A02', 'S1-D-02-TIP', 'S1-D-03-Q01', 'S1-D-03-A01', 'S1-D-03-Q02', 'S1-D-03-A02', 'S1-D-03-TIP', 'S1-D-04-Q01', 'S1-D-04-A01', 'S1-D-04-Q02', 'S1-D-04-A02', 'S1-D-04-TIP', 'S1-D-05-Q01', 'S1-D-05-A01', 'S1-D-05-Q02', 'S1-D-05-A02', 'S1-D-05-TIP', 'S1-D-06-Q01', 'S1-D-06-A01', 'S1-D-06-Q02', 'S1-D-06-A02', 'S1-D-06-TIP']);
 const voiceCache = {};
 let voiceMuted = false;
 
-function playVoice(key){
-  if(voiceMuted || !key) return;
-  try{
-    let a = voiceCache[key];
-    if(!a){
-      // 埋め込み済み（base64）の音声があればそれを優先。
-      // 無ければ従来通りフォルダから読み込む（bin_*系など、まだ未着手のもの用）。
-      const src = VOICE_DATA[key] ? VOICE_DATA[key] : (VOICE_BASE + key + '.mp3');
-      a = new Audio(src);
-      a.preload = 'auto';
-      voiceCache[key] = a;
-    }
-    a.currentTime = 0;
-    a.play().catch(()=>{}); // ファイル未配置・再生失敗時は静かに無視
-  }catch(e){ /* noop */ }
+let activeVoiceAudio = null;
+let activeVoiceDone = null;
+function voiceSource(key){
+  if(!key) return null;
+  if(LOCAL_VOICE_KEYS.has(key)) return `${VOICE_BASE}${VOICE_LOCALE}/${key}.wav`;
+  if((VOICE_LOCALE==='ja'||VOICE_LOCALE==='ja_child') && VOICE_DATA[key]) return VOICE_DATA[key];
+  if((VOICE_LOCALE==='ja'||VOICE_LOCALE==='ja_child') && key && /^[a-z0-9_-]+$/.test(key)) return `${VOICE_BASE}${key}.mp3`;
+  return null;
+}
+function stopVoice(complete=false){
+  const a=activeVoiceAudio, done=activeVoiceDone;
+  activeVoiceAudio=null; activeVoiceDone=null;
+  if(a){a.onended=null;a.onerror=null;a.pause();try{a.currentTime=0;}catch(e){}}
+  if(complete && done) done();
+  return !!(complete && done);
+}
+function playVoice(key,onEnded=null){
+  const finish=()=>{
+    if(finished) return;
+    finished=true;
+    if(activeVoiceAudio===a){activeVoiceAudio=null;activeVoiceDone=null;}
+    if(onEnded) onEnded();
+  };
+  if(voiceMuted || !key){if(onEnded) onEnded();return null;}
+  const src=voiceSource(key);
+  if(!src){if(onEnded) onEnded();return null;}
+  stopVoice(false);
+  let a=voiceCache[key], finished=false;
+  if(!a){a=new Audio(src);a.preload='auto';voiceCache[key]=a;}
+  activeVoiceAudio=a; activeVoiceDone=onEnded;
+  a.onended=finish; a.onerror=finish;
+  try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(finish);}catch(e){finish();}
+  return a;
 }
 
 // アイテムのimgタグから画像ファイル名（拡張子なし）を取り出し、
@@ -954,11 +982,54 @@ function showFloat(txt,color){
   el.addEventListener('animationend',()=>el.remove());
 }
 
+function currentDangerAudioIdForItem(item){
+  const index=DANGER_ITEMS.indexOf(item);
+  return index<0?null:`S1-D-${String(index+1).padStart(2,'0')}`;
+}
+function currentDangerAudioId(){
+  const index=DANGER_ITEMS.indexOf(currentItem);
+  return index<0?null:`S1-D-${String(index+1).padStart(2,'0')}`;
+}
+function playQuizVoice(part,onEnded=null){
+  if(!listenMode){if(onEnded)onEnded();return null;}
+  const base=currentDangerAudioId();
+  return base?playVoice(`${base}-${part}`,onEnded):(onEnded&&onEnded());
+}
+function replayActiveQuizQuestion(){
+  if(!listenMode) return;
+  if(document.getElementById('quiz-overlay').style.display==='flex'){
+    playQuizVoice(activeQuizNumber===1?'Q01':'Q02');
+  }else if(document.getElementById('recovery-overlay').style.display==='flex' && currentRecoveryItem){
+    playVoice(`${currentDangerAudioIdForItem(currentRecoveryItem)}-Q02`);
+  }
+}
+function setListenMode(enabled){
+  listenMode=!!enabled;
+  const button=document.getElementById('listen-mode-toggle');
+  button.classList.toggle('active',listenMode);
+  button.setAttribute('aria-pressed',String(listenMode));
+  ['#qz-options','#rec-options'].forEach(selector=>document.querySelectorAll(`${selector} .quiz-opt`).forEach((option,index)=>{
+    option.textContent=(listenMode?String.fromCharCode(65+index):String(index+1))+'. '+option.dataset.optionText;
+  }));
+  if(listenMode){
+    if(timerHandle){clearInterval(timerHandle);timerHandle=null;}
+    updateHUD();
+    const completedAudioAction=stopVoice(true);
+    if(!completedAudioAction) replayActiveQuizQuestion();
+  }else{
+    stopVoice(true);
+    updateHUD();
+    if(gameActive)startTimer();
+  }
+}
+document.getElementById('listen-mode-toggle').addEventListener('click',()=>setListenMode(!listenMode));
+
 // ════════════════════════════════════════════════
 // QUIZ FLOW
 // ════════════════════════════════════════════════
 function openQuiz(){
   q1Correct=false;
+  activeQuizNumber=1;
   document.getElementById('qz-emoji').innerHTML=currentItem.emoji;
   document.getElementById('qz-name').textContent=currentItem.name;
   document.getElementById('qz-badge').textContent='Q1 知識';
@@ -966,22 +1037,30 @@ function openQuiz(){
   renderQuizOptions(currentItem.q1.opts, (idx)=>{
     q1Correct = (idx===currentItem.q1.correct);
     flashOption(idx, currentItem.q1.correct, ()=>{
-      openQuiz2();
+      if(listenMode) playQuizVoice('A01',openQuiz2);
+      else openQuiz2();
     });
   });
   document.getElementById('quiz-overlay').style.display='flex';
+  if(listenMode){document.querySelector('#qz-options .quiz-opt')?.focus();playQuizVoice('Q01');}
 }
 
 function openQuiz2(){
+  activeQuizNumber=2;
   document.getElementById('qz-badge').textContent='Q2 行動';
   document.getElementById('qz-question').textContent=currentItem.q2.q;
   renderQuizOptions(currentItem.q2.opts, (idx)=>{
     const q2Correct = (idx===currentItem.q2.correct);
     flashOption(idx, currentItem.q2.correct, ()=>{
-      document.getElementById('quiz-overlay').style.display='none';
-      resolveDangerOutcome(q1Correct, q2Correct);
+      const finishQ2=()=>{
+        document.getElementById('quiz-overlay').style.display='none';
+        resolveDangerOutcome(q1Correct, q2Correct);
+      };
+      if(listenMode) playQuizVoice('A02',finishQ2);
+      else finishQ2();
     });
   });
+  if(listenMode){document.querySelector('#qz-options .quiz-opt')?.focus();playQuizVoice('Q02');}
 }
 
 function renderQuizOptions(opts, onPick){
@@ -990,7 +1069,8 @@ function renderQuizOptions(opts, onPick){
   opts.forEach((opt,idx)=>{
     const btn=document.createElement('button');
     btn.className='quiz-opt';
-    btn.textContent=(idx+1)+'. '+opt;
+    btn.dataset.optionText=opt;
+    btn.textContent=(listenMode?String.fromCharCode(65+idx):String(idx+1))+'. '+opt;
     btn.addEventListener('click',()=>{
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
       onPick(idx);
@@ -1048,22 +1128,16 @@ function resolveDangerOutcome(q1c, q2c){
   }
   updateHUD();
 
-  if(pinch>=100){
-    overlay.style.display='flex';
-    setTimeout(()=>{
-      overlay.style.display='none';
-      triggerTruckExplosion();
-    }, 1800);
-    return;
-  }
-
-  overlay.style.display='flex';
-  setTimeout(()=>{
+  const afterTip=()=>{
     overlay.style.display='none';
+    if(pinch>=100){triggerTruckExplosion();return;}
     updateHUD();
-    if(hp<=0){ triggerRecovery(); }
+    if(hp<=0){triggerRecovery();}
     else spawnItem();
-  }, 2200);
+  };
+  overlay.style.display='flex';
+  if(listenMode) playQuizVoice('TIP',afterTip);
+  else setTimeout(afterTip,pinch>=100?1800:2200);
 }
 
 const CHIP_ICON={'⭐':'star','❤️':'heart','⏱':'timer','💥':'burst','⚠️':'warning'};
@@ -1176,6 +1250,7 @@ function triggerRecovery(){
   recoveryUsed = true;
   gameActive = false;
   const item = missedDangerItems[Math.floor(Math.random()*missedDangerItems.length)];
+  currentRecoveryItem=item;
   document.getElementById('rec-emoji').innerHTML = item.emoji;
   document.getElementById('rec-name').textContent = item.name;
   document.getElementById('rec-question').textContent = item.q2.q;
@@ -1184,25 +1259,29 @@ function triggerRecovery(){
   item.q2.opts.forEach((opt,idx)=>{
     const btn=document.createElement('button');
     btn.className='quiz-opt';
-    btn.textContent=(idx+1)+'. '+opt;
+    btn.dataset.optionText=opt;
+    btn.textContent=(listenMode?String.fromCharCode(65+idx):String(idx+1))+'. '+opt;
     btn.addEventListener('click',()=>{
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
       const correct = idx===item.q2.correct;
       if(correct) btn.classList.add('correct-flash'); else { btn.classList.add('wrong-flash'); wrap.children[item.q2.correct].classList.add('correct-flash'); }
-      setTimeout(()=>{
+      const finishRecovery=()=>{
         document.getElementById('recovery-overlay').style.display='none';
         if(correct){
           hp=30; timer+=10; gameActive=true; updateHUD();
           showFloat('復活！','#4caf50');
           spawnItem();
-        } else {
-          endGame();
-        }
-      },900);
+        } else endGame();
+      };
+      if(listenMode){
+        const key=currentDangerAudioIdForItem(item);
+        playVoice(`${key}-A02`,()=>playVoice(`${key}-TIP`,finishRecovery));
+      }else setTimeout(finishRecovery,900);
     });
     wrap.appendChild(btn);
   });
   document.getElementById('recovery-overlay').style.display='flex';
+  if(listenMode) playVoice(`${currentDangerAudioIdForItem(item)}-Q02`);
 }
 
 // ════════════════════════════════════════════════
@@ -1210,8 +1289,10 @@ function triggerRecovery(){
 // ════════════════════════════════════════════════
 function startTimer(){
   if(timerHandle) clearInterval(timerHandle);
+  timerHandle=null;
+  if(listenMode){updateHUD();return;}
   timerHandle=setInterval(()=>{
-    if(!gameActive) return;
+    if(!gameActive || listenMode) return;
     timer -= 1;
     if(timer<=0){ timer=0; updateHUD(); endGame(); return; }
     updateHUD();
@@ -1496,12 +1577,17 @@ document.getElementById('bgm-toggle').addEventListener('click', toggleBGMMute);
 // START / RETRY
 // ════════════════════════════════════════════════
 document.getElementById('btn-start').addEventListener('click',()=>{
-  document.getElementById('scr-title').classList.add('hidden');
-  document.getElementById('scr-game').classList.remove('hidden');
-  startBGM();
-  resetGame();
-  spawnItem();
-  startTimer();
+  if(startInProgress) return;
+  startInProgress=true;
+  const begin=()=>{
+    document.getElementById('scr-title').classList.add('hidden');
+    document.getElementById('scr-game').classList.remove('hidden');
+    startBGM();
+    resetGame();
+    spawnItem();
+    startTimer();
+  };
+  playVoice('S1-001',begin);
 });
 document.getElementById('btn-retry').addEventListener('click',()=>{
   document.getElementById('scr-go').classList.add('hidden');
