@@ -1024,6 +1024,16 @@ function playOptionLetter(letter){
   lastOptionLetterCue=letter; lastOptionLetterCueAt=now;
   playVoice(`option-${letter}`);
 }
+let lastSortCue='';
+let lastSortCueAt=0;
+function playSortCategoryCue(binKey){
+  if(!listenMode || !BIN_VOICE_KEY[binKey]) return;
+  const now=Date.now();
+  // Pointer entry and keyboard focus may occur together; avoid duplicate playback.
+  if(lastSortCue===binKey && now-lastSortCueAt<350) return;
+  lastSortCue=binKey; lastSortCueAt=now;
+  playVoice(BIN_VOICE_KEY[binKey]);
+}
 function setListenMode(enabled){
   listenMode=!!enabled;
   const button=document.getElementById('listen-mode-toggle');
@@ -1410,6 +1420,14 @@ document.getElementById('bin-fire').addEventListener('click',()=>handleSort('fir
 document.getElementById('bin-nonburn').addEventListener('click',()=>handleSort('nonburn'));
 document.getElementById('bin-resource').addEventListener('click',()=>handleSort('resource'));
 document.getElementById('bin-wait').addEventListener('click',()=>handleSort('wait'));
+
+['fire','nonburn','resource','wait'].forEach(binKey=>{
+  const button=document.getElementById(`bin-${binKey}`);
+  if(!button) return;
+  button.addEventListener('pointerenter',()=>playSortCategoryCue(binKey));
+  button.addEventListener('focus',()=>playSortCategoryCue(binKey));
+});
+
 
 document.addEventListener('keydown',e=>{
   if(!gameActive) return;
