@@ -724,7 +724,7 @@ const DANGER_ITEMS = [
 let hp, timer, score, combo, maxCombo, pinch, correctCount, totalCount, dangerFound, dangerTotal;
 let timerHandle, gameActive, sortLocked;
 let currentItem, currentIsDanger;
-let listenMode=false, activeQuizNumber=1, startInProgress=false, currentRecoveryItem=null;
+let listenMode=false, activeQuizNumber=1, startInProgress=false, currentRecoveryItem=null, quizOptionCuesReady=false;
 let missedDangerItems = [];
 let recoveryUsed = false;
 let q1Correct = false;
@@ -1009,15 +1009,17 @@ function playQuizVoice(part,onEnded=null){
 function replayActiveQuizQuestion(){
   if(!listenMode) return;
   if(document.getElementById('quiz-overlay').style.display==='flex'){
-    playQuizVoice(activeQuizNumber===1?'Q01':'Q02');
+    quizOptionCuesReady=false;
+    playQuizVoice(activeQuizNumber===1?'Q01':'Q02',()=>{quizOptionCuesReady=true;});
   }else if(document.getElementById('recovery-overlay').style.display==='flex' && currentRecoveryItem){
-    playVoice(`${currentDangerAudioIdForItem(currentRecoveryItem)}-Q02`);
+    quizOptionCuesReady=false;
+    playVoice(`${currentDangerAudioIdForItem(currentRecoveryItem)}-Q02`,()=>{quizOptionCuesReady=true;});
   }
 }
 let lastOptionLetterCue='';
 let lastOptionLetterCueAt=0;
 function playOptionLetter(letter){
-  if(!listenMode || !/^[A-D]$/.test(letter)) return;
+  if(!listenMode || !quizOptionCuesReady || !/^[A-D]$/.test(letter)) return;
   const now=Date.now();
   // Pointer entry and focus can fire together for the same button; avoid double speech.
   if(lastOptionLetterCue===letter && now-lastOptionLetterCueAt<350) return;
@@ -1061,6 +1063,7 @@ document.getElementById('listen-mode-toggle').addEventListener('click',()=>setLi
 // ════════════════════════════════════════════════
 function openQuiz(){
   q1Correct=false;
+  quizOptionCuesReady=false;
   activeQuizNumber=1;
   document.getElementById('qz-emoji').innerHTML=currentItem.emoji;
   document.getElementById('qz-name').textContent=currentItem.name;
@@ -1074,11 +1077,12 @@ function openQuiz(){
     });
   });
   document.getElementById('quiz-overlay').style.display='flex';
-  if(listenMode){document.querySelector('#qz-options .quiz-opt')?.focus();playQuizVoice('Q01');}
+  if(listenMode){document.querySelector('#qz-options .quiz-opt')?.focus();playQuizVoice('Q01',()=>{quizOptionCuesReady=true;});}else quizOptionCuesReady=true;
 }
 
 function openQuiz2(){
   activeQuizNumber=2;
+  quizOptionCuesReady=false;
   document.getElementById('qz-badge').textContent='2もんめ どうする？';
   document.getElementById('qz-question').textContent=currentItem.q2.q;
   renderQuizOptions(currentItem.q2.opts, (idx)=>{
@@ -1092,7 +1096,7 @@ function openQuiz2(){
       else finishQ2();
     });
   });
-  if(listenMode){document.querySelector('#qz-options .quiz-opt')?.focus();playQuizVoice('Q02');}
+  if(listenMode){document.querySelector('#qz-options .quiz-opt')?.focus();playQuizVoice('Q02',()=>{quizOptionCuesReady=true;});}else quizOptionCuesReady=true;
 }
 
 function renderQuizOptions(opts, onPick){
@@ -1321,7 +1325,9 @@ function triggerRecovery(){
     wrap.appendChild(btn);
   });
   document.getElementById('recovery-overlay').style.display='flex';
-  if(listenMode) playVoice(`${currentDangerAudioIdForItem(item)}-Q02`);
+  quizOptionCuesReady=false;
+  if(listenMode) playVoice(`${currentDangerAudioIdForItem(item)}-Q02`,()=>{quizOptionCuesReady=true;});
+  else quizOptionCuesReady=true;
 }
 
 // ════════════════════════════════════════════════
