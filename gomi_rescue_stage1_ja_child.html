@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 <title>ごみを たすけよう・1つめ</title>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
@@ -428,7 +429,7 @@ button,a[role="button"]{touch-action:manipulation}
 <script>function gi(id,cls){return '<svg class="gi'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-'+id+'"/></svg>';}var GI_FIRE='<img class="gi" src="assets/bin-burn.png?v=20261025" alt="">',GI_TRUCK='<img class="ci-img" src="assets/truck.png?v=20261025" alt="">';</script>
 
 
-<button id="listen-mode-toggle" class="listen-mode-btn" type="button" aria-label="めでみず、おとをきいて こたえる もーど" title="めでみず、おとをきいて こたえる もーど" aria-pressed="false"><img class="listen-ear-icon" src="assets/読み上げアイコン.png" alt=""></button>
+<button id="listen-mode-toggle" class="listen-mode-btn" type="button" aria-label="めでみず、おとをきいて こたえる もーど" title="めでみず、おとをきいて こたえる もーど" aria-pressed="false"><img class="listen-ear-icon" src="assets/listen-ear.png" alt=""></button>
 <button id="bgm-toggle" class="bgm-btn" aria-label="BGM on/off"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sound-on"/></svg></button>
 <a href="gomi_rescue_start.html" class="home-link" aria-label="もどる" title="もどる"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></a>
 
@@ -742,7 +743,7 @@ function updateHUD(){
   const hpFill=document.getElementById('hp-fill');
   hpFill.style.background = hp>50 ? 'linear-gradient(90deg,#5edd7a,#8ef07a)' : hp>20 ? 'linear-gradient(90deg,#ffcf4d,#ffe08a)' : 'linear-gradient(90deg,#ff5a5a,#ff8a8a)';
   const timerEl=document.getElementById('h-timer');
-  if(listenMode) timerEl.innerHTML='<img class="listen-infinity-icon" src="assets/mugen_ao.png" alt="">';
+  if(listenMode) timerEl.innerHTML='<img class="listen-infinity-icon" src="assets/listen-infinity.png" alt="">';
   else timerEl.textContent=Math.max(0,Math.ceil(timer));
   document.getElementById('h-score').textContent=score.toLocaleString();
   document.getElementById('h-combo').textContent='×'+combo;
