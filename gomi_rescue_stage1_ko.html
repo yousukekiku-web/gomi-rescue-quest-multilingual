@@ -419,6 +419,8 @@ button,a[role="button"]{touch-action:manipulation}
 #listen-mode-toggle{top:max(env(safe-area-inset-top),8px)!important;border:2px solid #7653c8!important;color:#302543!important;font-size:23px!important}
 #bgm-toggle{top:calc(max(env(safe-area-inset-top),8px) + 50px)!important;border:2px solid #28509a!important}
 #listen-mode-toggle.active{background:#7653c8!important;color:#fff!important}
+.listen-ear-icon{display:block!important;width:25px!important;height:35px!important;object-fit:contain!important}
+.listen-infinity-icon{display:block;width:38px;height:20px;object-fit:contain;margin:0 auto}
 </style>
 </head>
 <body>
@@ -426,7 +428,7 @@ button,a[role="button"]{touch-action:manipulation}
 <script>function gi(id,cls){return '<svg class="gi'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-'+id+'"/></svg>';}var GI_FIRE='<img class="gi" src="assets/bin-burn.png?v=20261025" alt="">',GI_TRUCK='<img class="ci-img" src="assets/truck.png?v=20261025" alt="">';</script>
 
 
-<button id="listen-mode-toggle" class="listen-mode-btn" type="button" aria-label="듣고 답하기 모드" title="듣고 답하기 모드" aria-pressed="false">👂</button>
+<button id="listen-mode-toggle" class="listen-mode-btn" type="button" aria-label="듣고 답하기 모드" title="듣고 답하기 모드" aria-pressed="false"><img class="listen-ear-icon" src="assets/読み上げアイコン.png" alt=""></button>
 <button id="bgm-toggle" class="bgm-btn" aria-label="BGM on/off"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sound-on"/></svg></button>
 <a href="gomi_rescue_start.html" class="home-link" aria-label="홈" title="홈"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></a>
 
@@ -739,7 +741,9 @@ function updateHUD(){
   document.getElementById('hp-fill').style.width=Math.max(0,hp)+'%';
   const hpFill=document.getElementById('hp-fill');
   hpFill.style.background = hp>50 ? 'linear-gradient(90deg,#5edd7a,#8ef07a)' : hp>20 ? 'linear-gradient(90deg,#ffcf4d,#ffe08a)' : 'linear-gradient(90deg,#ff5a5a,#ff8a8a)';
-  document.getElementById('h-timer').textContent=listenMode ? '∞' : Math.max(0,Math.ceil(timer));
+  const timerEl=document.getElementById('h-timer');
+  if(listenMode) timerEl.innerHTML='<img class="listen-infinity-icon" src="assets/mugen_ao.png" alt="">';
+  else timerEl.textContent=Math.max(0,Math.ceil(timer));
   document.getElementById('h-score').textContent=score.toLocaleString();
   document.getElementById('h-combo').textContent='×'+combo;
   document.getElementById('pinch-fill').style.width=Math.min(100,pinch)+'%';
