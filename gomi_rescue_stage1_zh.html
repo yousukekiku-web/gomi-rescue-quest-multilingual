@@ -800,7 +800,7 @@ const VOICE_DATA = {
 
 const VOICE_BASE = 'gomi_rescue_assets_audio/';
 const VOICE_LOCALE = 'zh';
-const LOCAL_VOICE_KEYS = new Set(['broken-dish', 'glass-shards', 'bin_fire', 'cardboard', 'ceramic-shards', 'can', 'banana', 'glass-bottle', 'bin_wait', 'leftover-rice', 'magazine', 'newspaper', 'bin_nonburn', 'pet-bottle', 'bin_resource', 'paper', 'earbuds', 'mobile-battery', 'lighter', 'battery', 'alcohol-gel', 'spray-can', 'S1-001', 'S1-D-01-Q01', 'S1-D-01-A01', 'S1-D-01-Q02', 'S1-D-01-A02', 'S1-D-01-TIP', 'S1-D-02-Q01', 'S1-D-02-A01', 'S1-D-02-Q02', 'S1-D-02-A02', 'S1-D-02-TIP', 'S1-D-03-Q01', 'S1-D-03-A01', 'S1-D-03-Q02', 'S1-D-03-A02', 'S1-D-03-TIP', 'S1-D-04-Q01', 'S1-D-04-A01', 'S1-D-04-Q02', 'S1-D-04-A02', 'S1-D-04-TIP', 'S1-D-05-Q01', 'S1-D-05-A01', 'S1-D-05-Q02', 'S1-D-05-A02', 'S1-D-05-TIP', 'S1-D-06-Q01', 'S1-D-06-A01', 'S1-D-06-Q02', 'S1-D-06-A02', 'S1-D-06-TIP']);
+const LOCAL_VOICE_KEYS = new Set(['broken-dish', 'glass-shards', 'bin_fire', 'cardboard', 'ceramic-shards', 'can', 'banana', 'glass-bottle', 'bin_wait', 'leftover-rice', 'magazine', 'newspaper', 'bin_nonburn', 'pet-bottle', 'bin_resource', 'paper', 'earbuds', 'mobile-battery', 'lighter', 'battery', 'alcohol-gel', 'spray-can', 'S1-001', 'S1-D-01-Q01', 'S1-D-01-A01', 'S1-D-01-Q02', 'S1-D-01-A02', 'S1-D-01-TIP', 'S1-D-02-Q01', 'S1-D-02-A01', 'S1-D-02-Q02', 'S1-D-02-A02', 'S1-D-02-TIP', 'S1-D-03-Q01', 'S1-D-03-A01', 'S1-D-03-Q02', 'S1-D-03-A02', 'S1-D-03-TIP', 'S1-D-04-Q01', 'S1-D-04-A01', 'S1-D-04-Q02', 'S1-D-04-A02', 'S1-D-04-TIP', 'S1-D-05-Q01', 'S1-D-05-A01', 'S1-D-05-Q02', 'S1-D-05-A02', 'S1-D-05-TIP', 'S1-D-06-Q01', 'S1-D-06-A01', 'S1-D-06-Q02', 'S1-D-06-A02', 'S1-D-06-TIP', 'option-A', 'option-B', 'option-C', 'option-D']);
 const voiceCache = {};
 let voiceMuted = false;
 
@@ -1014,6 +1014,16 @@ function replayActiveQuizQuestion(){
     playVoice(`${currentDangerAudioIdForItem(currentRecoveryItem)}-Q02`);
   }
 }
+let lastOptionLetterCue='';
+let lastOptionLetterCueAt=0;
+function playOptionLetter(letter){
+  if(!listenMode || !/^[A-D]$/.test(letter)) return;
+  const now=Date.now();
+  // Pointer entry and focus can fire together for the same button; avoid double speech.
+  if(lastOptionLetterCue===letter && now-lastOptionLetterCueAt<350) return;
+  lastOptionLetterCue=letter; lastOptionLetterCueAt=now;
+  playVoice(`option-${letter}`);
+}
 function setListenMode(enabled){
   listenMode=!!enabled;
   const button=document.getElementById('listen-mode-toggle');
@@ -1080,8 +1090,13 @@ function renderQuizOptions(opts, onPick){
   opts.forEach((opt,idx)=>{
     const btn=document.createElement('button');
     btn.className='quiz-opt';
+    const letter=String.fromCharCode(65+idx);
     btn.dataset.optionText=opt;
-    btn.textContent=(listenMode?String.fromCharCode(65+idx):String(idx+1))+'. '+opt;
+    btn.dataset.optionLetter=letter;
+    btn.setAttribute('aria-label',letter+'. '+opt);
+    btn.textContent=(listenMode?letter:String(idx+1))+'. '+opt;
+    btn.addEventListener('pointerenter',()=>playOptionLetter(letter));
+    btn.addEventListener('focus',()=>playOptionLetter(letter));
     btn.addEventListener('click',()=>{
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
       onPick(idx);
@@ -1270,8 +1285,13 @@ function triggerRecovery(){
   item.q2.opts.forEach((opt,idx)=>{
     const btn=document.createElement('button');
     btn.className='quiz-opt';
+    const letter=String.fromCharCode(65+idx);
     btn.dataset.optionText=opt;
-    btn.textContent=(listenMode?String.fromCharCode(65+idx):String(idx+1))+'. '+opt;
+    btn.dataset.optionLetter=letter;
+    btn.setAttribute('aria-label',letter+'. '+opt);
+    btn.textContent=(listenMode?letter:String(idx+1))+'. '+opt;
+    btn.addEventListener('pointerenter',()=>playOptionLetter(letter));
+    btn.addEventListener('focus',()=>playOptionLetter(letter));
     btn.addEventListener('click',()=>{
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
       const correct = idx===item.q2.correct;
