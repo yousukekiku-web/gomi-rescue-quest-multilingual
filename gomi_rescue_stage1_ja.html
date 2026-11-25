@@ -1112,7 +1112,19 @@ function renderQuizOptions(opts, onPick){
     btn.textContent=(listenMode?letter:String(idx+1))+'. '+opt;
     btn.addEventListener('mouseover',()=>playOptionLetter(letter));
     btn.addEventListener('focus',()=>playOptionLetter(letter));
-    btn.addEventListener('click',()=>{
+    btn.addEventListener('pointerdown',event=>{
+      if(event.pointerType!=='touch'||!listenMode)return;
+      if(btn.dataset.touchPreviewed==='1'){
+        btn.dataset.touchPreviewed='0';btn.dataset.touchConfirm='1';
+      }else{
+        btn.dataset.touchPreviewed='1';btn.dataset.touchPreviewPending='1';playOptionLetter(letter);
+      }
+    });
+    btn.addEventListener('click',event=>{
+      if(btn.dataset.touchPreviewPending==='1'){
+        btn.dataset.touchPreviewPending='0';event.preventDefault();event.stopImmediatePropagation();return;
+      }
+      if(btn.dataset.touchConfirm==='1')btn.dataset.touchConfirm='0';
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
       onPick(idx);
     });
@@ -1307,7 +1319,19 @@ function triggerRecovery(){
     btn.textContent=(listenMode?letter:String(idx+1))+'. '+opt;
     btn.addEventListener('mouseover',()=>playOptionLetter(letter));
     btn.addEventListener('focus',()=>playOptionLetter(letter));
-    btn.addEventListener('click',()=>{
+    btn.addEventListener('pointerdown',event=>{
+      if(event.pointerType!=='touch'||!listenMode)return;
+      if(btn.dataset.touchPreviewed==='1'){
+        btn.dataset.touchPreviewed='0';btn.dataset.touchConfirm='1';
+      }else{
+        btn.dataset.touchPreviewed='1';btn.dataset.touchPreviewPending='1';playOptionLetter(letter);
+      }
+    });
+    btn.addEventListener('click',event=>{
+      if(btn.dataset.touchPreviewPending==='1'){
+        btn.dataset.touchPreviewPending='0';event.preventDefault();event.stopImmediatePropagation();return;
+      }
+      if(btn.dataset.touchConfirm==='1')btn.dataset.touchConfirm='0';
       wrap.querySelectorAll('.quiz-opt').forEach(b=>b.style.pointerEvents='none');
       const correct = idx===item.q2.correct;
       if(correct) btn.classList.add('correct-flash'); else { btn.classList.add('wrong-flash'); wrap.children[item.q2.correct].classList.add('correct-flash'); }
@@ -1435,6 +1459,20 @@ document.getElementById('bin-wait').addEventListener('click',()=>handleSort('wai
   if(!button) return;
   button.addEventListener('mouseover',()=>playSortCategoryCue(binKey));
   button.addEventListener('focus',()=>playSortCategoryCue(binKey));
+  button.addEventListener('pointerdown',event=>{
+    if(event.pointerType!=='touch')return;
+    if(button.dataset.touchPreviewed==='1'){
+      button.dataset.touchPreviewed='0';button.dataset.touchConfirm='1';
+    }else{
+      button.dataset.touchPreviewed='1';button.dataset.touchPreviewPending='1';playSortCategoryCue(binKey);
+    }
+  });
+  button.addEventListener('click',event=>{
+    if(button.dataset.touchPreviewPending==='1'){
+      button.dataset.touchPreviewPending='0';event.preventDefault();event.stopImmediatePropagation();return;
+    }
+    if(button.dataset.touchConfirm==='1')button.dataset.touchConfirm='0';
+  },true);
 });
 
 
