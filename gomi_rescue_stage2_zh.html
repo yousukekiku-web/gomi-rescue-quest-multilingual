@@ -2,6 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>垃圾救援 · 寻找4种危险物品</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -200,6 +201,15 @@ button,a[role="button"]{touch-action:manipulation}
 .tile-fallback-text{color:#2a1c10;font-size:11px}
 .ftxt{font-family:'BIZ UDPGothic','BIZ UDゴシック','Noto Sans JP','Yu Gothic',sans-serif;font-weight:700;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
 </style>
+<style id="stage2-audio-mode-css">
+#listen-mode-toggle{position:fixed!important;top:max(env(safe-area-inset-top),8px)!important;right:12px!important;z-index:2147483647!important;width:44px!important;height:44px!important;display:flex!important;align-items:center!important;justify-content:center!important;border-radius:50%!important;background:#fff!important;border:2px solid #7653c8!important;box-shadow:0 0 0 2px #28509a,0 3px 10px rgba(0,0,0,.25)!important;cursor:pointer!important;visibility:visible!important;opacity:1!important;padding:0!important}
+#listen-mode-toggle.active{background:#7653c8!important;box-shadow:0 0 0 3px rgba(118,83,200,.25),0 3px 10px rgba(0,0,0,.25)!important}
+#listen-mode-toggle:focus-visible,#bgm-toggle:focus-visible{outline:3px solid #17152b!important;outline-offset:3px!important}
+.listen-ear-icon{display:block!important;width:25px!important;height:35px!important;object-fit:contain!important}
+#bgm-toggle{top:calc(max(env(safe-area-inset-top),8px) + 50px)!important;z-index:2147483646!important}
+.listen-infinity-icon{display:block;width:38px;height:20px;object-fit:contain;margin:0 auto}
+.tile:focus-visible{outline:4px solid #111!important;outline-offset:2px!important;z-index:2147483647!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="5.5" y="11" width="13" height="9.5" rx="1" fill="#fff3d6"/><path d="M3 11.8 12 3.5l9 8.3z" fill="#e8554e"/><rect x="10" y="14.5" width="4" height="6" rx=".6" fill="#a3703a"/></symbol><symbol id="i-sound-on" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#5aa0f0"/><path d="M15.5 9c1.5 1.7 1.5 4.3 0 6" fill="none"/><path d="M18.2 6.3c3 3.2 3 8.2 0 11.4" fill="none"/></symbol><symbol id="i-sound-off" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 9.5H7.5L12.5 5.5v13L7.5 14.5H3.5z" fill="#aab4c0"/><path d="M15.8 9.3l5 5.4M20.8 9.3l-5 5.4" fill="none" stroke="#e8554e" stroke-width="2"/></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#8a95a3" stroke-width="2"/><rect x="5" y="11" width="14" height="10" rx="2.2" fill="#f2b630"/><circle cx="12" cy="15.6" r="1.5" fill="#3b2a1a" stroke="none"/><path d="M12 16.5v2" fill="none"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 20.5C5 15.6 3 11.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6c0 3-2 7-9 11.9z" fill="#ee5a6f"/></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="9.6" y="2.2" width="4.8" height="2.6" rx=".8" fill="#8a95a3"/><circle cx="12" cy="13.6" r="7.6" fill="#fff"/><path d="M12 13.6V9" fill="none" stroke-width="1.8"/><path d="M12 13.6l3 1.8" fill="none"/></symbol><symbol id="i-ok" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3.2"/></symbol><symbol id="i-ng" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="3.4"/></symbol><symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,2.40 14.70,9.08 21.89,9.59 16.37,14.22 18.11,21.21 12.00,17.40 5.89,21.21 7.63,14.22 2.11,9.59 9.30,9.08" fill="#ffd23f"/></symbol><symbol id="i-warning" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.4 22 20.6H2z" fill="#ffcc33"/><path d="M12 9.6v5" fill="none" stroke-width="1.8"/><circle cx="12" cy="17.6" r=".5" fill="#3b2a1a"/></symbol><symbol id="i-burst" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><polygon points="12.00,1.00 13.85,6.29 18.47,3.10 16.85,8.47 22.46,8.60 18.00,12.00 22.46,15.40 16.85,15.53 18.47,20.90 13.85,17.71 12.00,23.00 10.15,17.71 5.53,20.90 7.15,15.53 1.54,15.40 6.00,12.00 1.54,8.60 7.15,8.47 5.53,3.10 10.15,6.29" fill="#ff8a3d"/><polygon points="12.00,5.80 12.99,8.96 15.64,6.98 14.59,10.12 17.90,10.08 15.20,12.00 17.90,13.92 14.59,13.88 15.64,17.02 12.99,15.04 12.00,18.20 11.01,15.04 8.36,17.02 9.41,13.88 6.10,13.92 8.80,12.00 6.10,10.08 9.41,10.12 8.36,6.98 11.01,8.96" fill="#ffd23f" stroke="none"/></symbol><symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(0 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(45 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(90 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(135 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(180 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(225 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(270 12 12)"/><rect x="10.1" y="1.8" width="3.8" height="5" rx=".7" fill="#9aa5b1" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7" fill="#9aa5b1"/><circle cx="12" cy="12" r="2.6" fill="#fff"/></symbol><symbol id="i-tire" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#444"/><circle cx="12" cy="12" r="4.6" fill="#c8ced6"/><circle cx="12" cy="12" r="1.3" fill="#3b2a1a" stroke="none"/></symbol><symbol id="i-puff" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="8" cy="13.5" r="4.2" fill="#fff" stroke="#9aa5b1"/><circle cx="13.2" cy="10.5" r="5.2" fill="#fff" stroke="#9aa5b1"/><circle cx="17.2" cy="14.4" r="4" fill="#fff" stroke="#9aa5b1"/><circle cx="8" cy="13.5" r="3.6" fill="#fff" stroke="none"/><circle cx="13.2" cy="10.5" r="4.6" fill="#fff" stroke="none"/><circle cx="17.2" cy="14.4" r="3.4" fill="#fff" stroke="none"/><rect x="8" y="14" width="9.4" height="4.2" fill="#fff" stroke="none"/></symbol><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 21.4s-6.8-6.4-6.8-11.4a6.8 6.8 0 0 1 13.6 0c0 5-6.8 11.4-6.8 11.4z" fill="#e8554e"/><circle cx="12" cy="10" r="2.5" fill="#fff"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19.6 12a7.6 7.6 0 1 1-2.4-5.5" fill="none" stroke="#3b6fd8" stroke-width="2.4"/><path d="M20.8 3.6v5.6h-5.6z" fill="#3b6fd8" stroke="#3b6fd8" stroke-width="1"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><path d="M4 20l1.3-4.8L16.2 4.3a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.8 18.7z" fill="#f5c542"/><path d="M15 5.5l3.5 3.5" fill="none"/><path d="M4 20l1.3-4.8 3.5 3.5z" fill="#f3d9a8"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="#3b2a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9.2" fill="#2ecc71"/><path d="M7.4 12.4l3.1 3.1 6.1-6.6" fill="none" stroke="#fff" stroke-width="2.5"/></symbol></defs></svg>
@@ -207,7 +217,8 @@ button,a[role="button"]{touch-action:manipulation}
 
 <div id="app">
 
-  <button id="bgm-toggle" class="bgm-btn" aria-label="BGM on/off"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sound-on"/></svg></button>
+  <button id="listen-mode-toggle" class="listen-mode-btn" type="button" aria-label="切换听音搜索模式" title="听音搜索模式" aria-pressed="false"><img class="listen-ear-icon" src="assets/listen-ear.png" alt=""></button>
+<button id="bgm-toggle" class="bgm-btn" aria-label="BGM on/off"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sound-on"/></svg></button>
   <a href="gomi_rescue_start.html" class="home-link" aria-label="主页へ" title="主页へ"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></a>
 
   <!-- ===== TITLE ===== -->
@@ -360,6 +371,77 @@ const IMG_DATA = {
     if(IMG_DATA[keys[i]]) el.innerHTML='<img src="'+IMG_DATA[keys[i]]+'" alt="">';
   });
 })();
+const STAGE2_VOICE_LOCALE='zh';
+const STAGE2_VOICE_BASE='gomi_rescue_assets_audio/'+STAGE2_VOICE_LOCALE+'/';
+const STAGE2_AUDIO_EXTENSIONS={'S2-002':'.wav','S2-T-01':'.wav','S2-T-02':'.wav','S2-T-03':'.wav','S2-T-04':'.wav','S2-T-05':'.wav','S2-T-06':'.wav','S2-T-07':'.wav','S2-T-08':'.wav','S2-T-09':'.wav','S2-T-10':'.wav','S2-T-11':'.wav','S2-T-12':'.wav','S2-T-13':'.wav','S2-T-14':'.wav','S2-T-15':'.wav','S2-T-16':'.wav','S2-T-17':'.wav','S2-T-18':'.wav','S2-D-01':'.wav','S2-D-02':'.wav','S2-D-03':'.wav','S2-D-04':'.wav','S2-D-05':'.wav','S2-D-06':'.wav','S2-D-07':'.wav','S2-D-08':'.wav','S2-D-09':'.wav','S2-D-10':'.wav','S2-D-11':'.wav','S2-D-12':'.wav','S2-D-13':'.wav','S2-D-14':'.wav','S2-D-15':'.wav','S2-D-16':'.wav','S2-D-17':'.wav','S2-D-18':'.wav','S2-D-19':'.wav','S2-D-20':'.wav','S2-D-21':'.wav','S2-D-22':'.wav','S2-D-23':'.wav'};
+const stage2VoiceCache={};
+let stage2ActiveAudio=null;
+let stage2ActiveDone=null;
+let stage2ListenMode=false;
+let stage2StartPending=false;
+let lastTileVoiceId='';
+let lastTileVoiceAt=0;
+function stopStage2Voice(complete=false){
+  const a=stage2ActiveAudio,done=stage2ActiveDone;
+  stage2ActiveAudio=null;stage2ActiveDone=null;
+  if(a){a.onended=null;a.onerror=null;a.pause();try{a.currentTime=0;}catch(e){}}
+  if(complete&&done)done();
+}
+function playStage2Voice(id,onEnded=null){
+  const ext=STAGE2_AUDIO_EXTENSIONS[id];
+  if(!ext){if(onEnded)onEnded();return null;}
+  stopStage2Voice(false);
+  let a=stage2VoiceCache[id],finished=false;
+  const finish=()=>{
+    if(finished)return;finished=true;
+    if(stage2ActiveAudio===a){stage2ActiveAudio=null;stage2ActiveDone=null;}
+    if(onEnded)onEnded();
+  };
+  if(!a){a=new Audio(STAGE2_VOICE_BASE+id+ext);a.preload='auto';stage2VoiceCache[id]=a;}
+  stage2ActiveAudio=a;stage2ActiveDone=onEnded;
+  a.onended=finish;a.onerror=finish;
+  try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(finish);}catch(e){finish();}
+  return a;
+}
+function stage2TileVoiceId(item){
+  if(item.key&&item.key.startsWith('d-')){
+    const index=DECOY_PNG.findIndex(d=>d.file===item.key.slice(2));
+    return index<0?null:'S2-D-'+String(index+1).padStart(2,'0');
+  }
+  const index=TARGET_POOL.findIndex(t=>t.key===item.key);
+  return index<0?null:'S2-T-'+String(index+1).padStart(2,'0');
+}
+function playTileVoice(id){
+  if(!stage2ListenMode||!gameActive||!id)return;
+  const now=Date.now();
+  if(lastTileVoiceId===id&&now-lastTileVoiceAt<450)return;
+  lastTileVoiceId=id;lastTileVoiceAt=now;
+  playStage2Voice(id);
+}
+function setStage2ListenMode(enabled){
+  stage2ListenMode=!!enabled;
+  const button=document.getElementById('listen-mode-toggle');
+  button.classList.toggle('active',stage2ListenMode);
+  button.setAttribute('aria-pressed',String(stage2ListenMode));
+  if(stage2ListenMode){
+    clearInterval(timerHandle);timerHandle=null;
+  }else{
+    stopStage2Voice(false);
+    if(gameActive)startStage2Clock();
+  }
+  updateHUD();
+}
+function startStage2Clock(){
+  clearInterval(timerHandle);timerHandle=null;
+  if(stage2ListenMode||!gameActive){updateHUD();return;}
+  timerHandle=setInterval(()=>{
+    timer--;
+    updateHUD();
+    if(timer<=0){timer=0;updateHUD();endRound('timeup');}
+  },1000);
+}
+document.getElementById('listen-mode-toggle').addEventListener('click',()=>setStage2ListenMode(!stage2ListenMode));
+
 const IMG_BASE = 'gomi_rescue_assets_white/';
 const TILE_COUNT = 64;   // クラッター全体の数（さらに増量）
 const TARGET_COUNT = 10;  // 1ラウンドで探す危险物品の数
@@ -487,6 +569,13 @@ function buildRound(){
     el.style.transform = 'rotate('+rot+'deg) scale('+scale+')';
     // ※タイルごとのCSSフィルター(saturate/brightness)は、iPhoneで描画されない(タップするまで空白)原因になるため廃止
     el.innerHTML = tileInner(t);
+    el.dataset.voiceId=stage2TileVoiceId(t)||'';
+    el.tabIndex=0;
+    el.setAttribute('role','button');
+    el.setAttribute('aria-label',t.name||'item');
+    el.addEventListener('mouseover',()=>playTileVoice(el.dataset.voiceId));
+    el.addEventListener('focus',()=>playTileVoice(el.dataset.voiceId));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();handleTap(el,t);}});
     el.addEventListener('pointerdown', ()=>handleTap(el, t));
     field.appendChild(el);
   });
@@ -512,7 +601,9 @@ function buildRound(){
 }
 
 function updateHUD(){
-  document.getElementById('h-timer').textContent = timer;
+  const timerNode=document.getElementById('h-timer');
+  if(stage2ListenMode) timerNode.innerHTML='<img class="listen-infinity-icon" src="assets/listen-infinity.png" alt="∞">';
+  else timerNode.textContent=timer;
   document.getElementById('h-found').textContent = foundCount+'/'+TARGET_COUNT;
   document.getElementById('h-miss').textContent = missCount;
   document.getElementById('hud-timer').classList.toggle('warn', timer<=10);
@@ -555,7 +646,7 @@ function handleTap(el, item){
   }
 }
 
-function startRound(){
+function beginRound(){
   document.getElementById('scr-title').classList.add('hidden');
   document.getElementById('scr-result').classList.add('hidden');
   document.getElementById('scr-game').classList.remove('hidden');
@@ -563,12 +654,15 @@ function startRound(){
   timer = 60;
   gameActive = true;
   buildRound();
-  clearInterval(timerHandle);
-  timerHandle = setInterval(()=>{
-    timer--;
-    updateHUD();
-    if(timer<=0){ timer=0; updateHUD(); endRound('timeup'); }
-  },1000);
+  startStage2Clock();
+}
+
+function startRound(){
+  if(stage2StartPending)return;
+  if(stage2ListenMode){
+    stage2StartPending=true;
+    playStage2Voice('S2-002',()=>{stage2StartPending=false;beginRound();});
+  }else beginRound();
 }
 
 function endRound(reason){
@@ -586,7 +680,7 @@ function endRound(reason){
   });
 
   document.getElementById('res-found').textContent = foundCount+'/'+TARGET_COUNT;
-  document.getElementById('res-time').textContent = timer+'秒';
+  document.getElementById('res-time').textContent = stage2ListenMode ? '∞' : timer+'秒';
   document.getElementById('res-miss').textContent = missCount;
 
   const emojiEl = document.getElementById('res-emoji');
