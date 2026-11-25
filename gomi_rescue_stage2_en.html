@@ -576,7 +576,17 @@ function buildRound(){
     el.addEventListener('mouseover',()=>playTileVoice(el.dataset.voiceId));
     el.addEventListener('focus',()=>playTileVoice(el.dataset.voiceId));
     el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();handleTap(el,t);}});
-    el.addEventListener('pointerdown', ()=>handleTap(el, t));
+    el.addEventListener('pointerdown',event=>{
+      if(stage2ListenMode&&event.pointerType==='touch'){
+        if(el.dataset.touchPreviewed==='1'){
+          el.dataset.touchPreviewed='0';handleTap(el,t);
+        }else{
+          el.dataset.touchPreviewed='1';playTileVoice(el.dataset.voiceId);
+        }
+        return;
+      }
+      handleTap(el,t);
+    });
     field.appendChild(el);
   });
 
