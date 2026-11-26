@@ -379,6 +379,7 @@ let stage2ActiveAudio=null;
 let stage2ActiveDone=null;
 let stage2ListenMode=false;
 let stage2StartPending=false;
+let stage2ModeCuePlaying=false;
 let lastTileVoiceId='';
 let lastTileVoiceAt=0;
 function stopStage2Voice(complete=false){
@@ -412,12 +413,27 @@ function stage2TileVoiceId(item){
   return index<0?null:'S2-T-'+String(index+1).padStart(2,'0');
 }
 function playTileVoice(id){
-  if(!stage2ListenMode||!gameActive||!id)return;
+  if(!stage2ListenMode||stage2ModeCuePlaying||!gameActive||!id)return;
   const now=Date.now();
   if(lastTileVoiceId===id&&now-lastTileVoiceAt<450)return;
   lastTileVoiceId=id;lastTileVoiceAt=now;
   playStage2Voice(id);
 }
+let lastStage2ModeCueTriggerAt=0;
+function playStage2ModeCue(){
+  if(stage2ModeCuePlaying)return;
+  stage2ModeCuePlaying=true;
+  playStage2Voice('voice-mode',()=>{stage2ModeCuePlaying=false;});
+}
+function announceStage2ListenButton(event){
+  if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+  const now=Date.now();if(now-lastStage2ModeCueTriggerAt<500)return;lastStage2ModeCueTriggerAt=now;
+  playStage2ModeCue();
+}
+const stage2ListenButton=document.getElementById('listen-mode-toggle');
+stage2ListenButton.addEventListener('pointerenter',announceStage2ListenButton);
+stage2ListenButton.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceStage2ListenButton(event)});
+stage2ListenButton.addEventListener('focus',announceStage2ListenButton);
 function setStage2ListenMode(enabled){
   stage2ListenMode=!!enabled;
   const button=document.getElementById('listen-mode-toggle');
@@ -425,7 +441,9 @@ function setStage2ListenMode(enabled){
   button.setAttribute('aria-pressed',String(stage2ListenMode));
   if(stage2ListenMode){
     clearInterval(timerHandle);timerHandle=null;
+    playStage2ModeCue();
   }else{
+    stage2ModeCuePlaying=false;
     stopStage2Voice(false);
     if(gameActive)startStage2Clock();
   }

@@ -373,12 +373,13 @@ const IMG_DATA = {
 })();
 const STAGE2_VOICE_LOCALE='ja_child';
 const STAGE2_VOICE_BASE='gomi_rescue_assets_audio/'+STAGE2_VOICE_LOCALE+'/';
-const STAGE2_AUDIO_EXTENSIONS={'S2-002':'.wav','S2-T-01':'.wav','S2-T-02':'.wav','S2-T-03':'.wav','S2-T-04':'.wav','S2-T-05':'.wav','S2-T-06':'.wav','S2-T-07':'.wav','S2-T-08':'.mp3','S2-T-09':'.wav','S2-T-10':'.wav','S2-T-11':'.wav','S2-T-12':'.wav','S2-T-13':'.wav','S2-T-14':'.wav','S2-T-15':'.wav','S2-T-16':'.mp3','S2-T-17':'.mp3','S2-T-18':'.mp3','S2-D-01':'.mp3','S2-D-02':'.mp3','S2-D-03':'.mp3','S2-D-04':'.mp3','S2-D-05':'.mp3','S2-D-06':'.mp3','S2-D-07':'.mp3','S2-D-08':'.mp3','S2-D-09':'.mp3','S2-D-10':'.wav','S2-D-11':'.wav','S2-D-12':'.wav','S2-D-13':'.wav','S2-D-14':'.wav','S2-D-15':'.wav','S2-D-16':'.wav','S2-D-17':'.wav','S2-D-18':'.wav','S2-D-19':'.wav','S2-D-20':'.wav','S2-D-21':'.wav','S2-D-22':'.wav','S2-D-23':'.wav'};
+const STAGE2_AUDIO_EXTENSIONS={'S2-002':'.wav','S2-T-01':'.wav','S2-T-02':'.wav','S2-T-03':'.wav','S2-T-04':'.wav','S2-T-05':'.wav','S2-T-06':'.wav','S2-T-07':'.wav','S2-T-08':'.mp3','S2-T-09':'.wav','S2-T-10':'.wav','S2-T-11':'.wav','S2-T-12':'.wav','S2-T-13':'.wav','S2-T-14':'.wav','S2-T-15':'.wav','S2-T-16':'.mp3','S2-T-17':'.mp3','S2-T-18':'.mp3','S2-D-01':'.mp3','S2-D-02':'.mp3','S2-D-03':'.mp3','S2-D-04':'.mp3','S2-D-05':'.mp3','S2-D-06':'.mp3','S2-D-07':'.mp3','S2-D-08':'.mp3','S2-D-09':'.mp3','S2-D-10':'.wav','S2-D-11':'.wav','S2-D-12':'.wav','S2-D-13':'.wav','S2-D-14':'.wav','S2-D-15':'.wav','S2-D-16':'.wav','S2-D-17':'.wav','S2-D-18':'.wav','S2-D-19':'.wav','S2-D-20':'.wav','S2-D-21':'.wav','S2-D-22':'.wav','S2-D-23':'.wav','voice-mode':'.wav'};
 const stage2VoiceCache={};
 let stage2ActiveAudio=null;
 let stage2ActiveDone=null;
 let stage2ListenMode=false;
 let stage2StartPending=false;
+let stage2ModeCuePlaying=false;
 let lastTileVoiceId='';
 let lastTileVoiceAt=0;
 function stopStage2Voice(complete=false){
@@ -412,12 +413,27 @@ function stage2TileVoiceId(item){
   return index<0?null:'S2-T-'+String(index+1).padStart(2,'0');
 }
 function playTileVoice(id){
-  if(!stage2ListenMode||!gameActive||!id)return;
+  if(!stage2ListenMode||stage2ModeCuePlaying||!gameActive||!id)return;
   const now=Date.now();
   if(lastTileVoiceId===id&&now-lastTileVoiceAt<450)return;
   lastTileVoiceId=id;lastTileVoiceAt=now;
   playStage2Voice(id);
 }
+let lastStage2ModeCueTriggerAt=0;
+function playStage2ModeCue(){
+  if(stage2ModeCuePlaying)return;
+  stage2ModeCuePlaying=true;
+  playStage2Voice('voice-mode',()=>{stage2ModeCuePlaying=false;});
+}
+function announceStage2ListenButton(event){
+  if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+  const now=Date.now();if(now-lastStage2ModeCueTriggerAt<500)return;lastStage2ModeCueTriggerAt=now;
+  playStage2ModeCue();
+}
+const stage2ListenButton=document.getElementById('listen-mode-toggle');
+stage2ListenButton.addEventListener('pointerenter',announceStage2ListenButton);
+stage2ListenButton.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceStage2ListenButton(event)});
+stage2ListenButton.addEventListener('focus',announceStage2ListenButton);
 function setStage2ListenMode(enabled){
   stage2ListenMode=!!enabled;
   const button=document.getElementById('listen-mode-toggle');
@@ -425,7 +441,9 @@ function setStage2ListenMode(enabled){
   button.setAttribute('aria-pressed',String(stage2ListenMode));
   if(stage2ListenMode){
     clearInterval(timerHandle);timerHandle=null;
+    playStage2ModeCue();
   }else{
+    stage2ModeCuePlaying=false;
     stopStage2Voice(false);
     if(gameActive)startStage2Clock();
   }

@@ -800,9 +800,10 @@ const VOICE_DATA = {
 
 const VOICE_BASE = 'gomi_rescue_assets_audio/';
 const VOICE_LOCALE = 'ko';
-const LOCAL_VOICE_KEYS = new Set(['broken-dish', 'glass-shards', 'bin_fire', 'cardboard', 'ceramic-shards', 'can', 'banana', 'glass-bottle', 'bin_wait', 'leftover-rice', 'magazine', 'newspaper', 'bin_nonburn', 'pet-bottle', 'bin_resource', 'paper', 'earbuds', 'mobile-battery', 'lighter', 'battery', 'alcohol-gel', 'spray-can', 'S1-001', 'S1-D-01-Q01', 'S1-D-01-A01', 'S1-D-01-Q02', 'S1-D-01-A02', 'S1-D-01-TIP', 'S1-D-02-Q01', 'S1-D-02-A01', 'S1-D-02-Q02', 'S1-D-02-A02', 'S1-D-02-TIP', 'S1-D-03-Q01', 'S1-D-03-A01', 'S1-D-03-Q02', 'S1-D-03-A02', 'S1-D-03-TIP', 'S1-D-04-Q01', 'S1-D-04-A01', 'S1-D-04-Q02', 'S1-D-04-A02', 'S1-D-04-TIP', 'S1-D-05-Q01', 'S1-D-05-A01', 'S1-D-05-Q02', 'S1-D-05-A02', 'S1-D-05-TIP', 'S1-D-06-Q01', 'S1-D-06-A01', 'S1-D-06-Q02', 'S1-D-06-A02', 'S1-D-06-TIP', 'option-A', 'option-B', 'option-C', 'option-D']);
+const LOCAL_VOICE_KEYS = new Set(['broken-dish', 'glass-shards', 'bin_fire', 'cardboard', 'ceramic-shards', 'can', 'banana', 'glass-bottle', 'bin_wait', 'leftover-rice', 'magazine', 'newspaper', 'bin_nonburn', 'pet-bottle', 'bin_resource', 'paper', 'earbuds', 'mobile-battery', 'lighter', 'battery', 'alcohol-gel', 'spray-can', 'S1-001', 'S1-D-01-Q01', 'S1-D-01-A01', 'S1-D-01-Q02', 'S1-D-01-A02', 'S1-D-01-TIP', 'S1-D-02-Q01', 'S1-D-02-A01', 'S1-D-02-Q02', 'S1-D-02-A02', 'S1-D-02-TIP', 'S1-D-03-Q01', 'S1-D-03-A01', 'S1-D-03-Q02', 'S1-D-03-A02', 'S1-D-03-TIP', 'S1-D-04-Q01', 'S1-D-04-A01', 'S1-D-04-Q02', 'S1-D-04-A02', 'S1-D-04-TIP', 'S1-D-05-Q01', 'S1-D-05-A01', 'S1-D-05-Q02', 'S1-D-05-A02', 'S1-D-05-TIP', 'S1-D-06-Q01', 'S1-D-06-A01', 'S1-D-06-Q02', 'S1-D-06-A02', 'S1-D-06-TIP', 'option-A', 'option-B', 'option-C', 'option-D', 'voice-mode']);
 const voiceCache = {};
 let voiceMuted = false;
+let voiceModeCuePlaying = false;
 
 let activeVoiceAudio = null;
 let activeVoiceDone = null;
@@ -1030,13 +1031,33 @@ let lastSortCue='';
 let lastSortCueAt=0;
 function playSortCategoryCue(binKey){
   // Sorting labels remain available even when quiz narration is disabled.
-  if(!BIN_VOICE_KEY[binKey]) return;
+  if(voiceModeCuePlaying || !BIN_VOICE_KEY[binKey]) return;
   const now=Date.now();
   // Pointer entry and keyboard focus may occur together; avoid duplicate playback.
   if(lastSortCue===binKey && now-lastSortCueAt<350) return;
   lastSortCue=binKey; lastSortCueAt=now;
   playVoice(BIN_VOICE_KEY[binKey]);
 }
+let lastModeCueTriggerAt=0;
+function playVoiceModeCue(){
+  if(voiceModeCuePlaying)return;
+  voiceModeCuePlaying=true;
+  quizOptionCuesReady=false;
+  stopVoice(false);
+  playVoice('voice-mode',()=>{
+    voiceModeCuePlaying=false;
+    if(listenMode)replayActiveQuizQuestion();
+  });
+}
+function announceListenButton(event){
+  if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+  const now=Date.now();if(now-lastModeCueTriggerAt<500)return;lastModeCueTriggerAt=now;
+  playVoiceModeCue();
+}
+const listenButton=document.getElementById('listen-mode-toggle');
+listenButton.addEventListener('pointerenter',announceListenButton);
+listenButton.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceListenButton(event)});
+listenButton.addEventListener('focus',announceListenButton);
 function setListenMode(enabled){
   listenMode=!!enabled;
   const button=document.getElementById('listen-mode-toggle');
@@ -1048,10 +1069,10 @@ function setListenMode(enabled){
   if(listenMode){
     if(timerHandle){clearInterval(timerHandle);timerHandle=null;}
     updateHUD();
-    const completedAudioAction=stopVoice(true);
-    if(!completedAudioAction) replayActiveQuizQuestion();
+    playVoiceModeCue();
   }else{
-    stopVoice(true);
+    voiceModeCuePlaying=false;
+    stopVoice(false);
     updateHUD();
     if(gameActive)startTimer();
   }

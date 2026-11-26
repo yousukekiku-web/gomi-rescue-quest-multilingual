@@ -159,12 +159,27 @@ button,input,select,textarea{font-family:inherit}
  const button=document.createElement('button');button.id='listen-mode-toggle';button.type='button';
  button.setAttribute('aria-label','切换听音模式');button.title='听音模式';button.setAttribute('aria-pressed','false');
  button.innerHTML='<img src="assets/listen-ear.png" alt="" class="listen-ear-icon">';app.appendChild(button);
- let enabled=false, active=null, quizReady=false, lastOption='', lastOptionAt=0;
+ let enabled=false, active=null, quizReady=false, lastOption='', lastOptionAt=0, modeCuePlaying=false;
  const wrongQuestionNumbers=new Set([2,4,7,10,12,15,18,21,24]);
  const audioCache={};
  function stopVoice(){if(active){active.onended=null;active.onerror=null;active.pause();try{active.currentTime=0}catch(e){}active=null}}
+ function playModeCue(){
+   if(modeCuePlaying)return;
+   modeCuePlaying=true;quizReady=false;stopVoice();let cue=audioCache['voice-mode'];
+   if(!cue){cue=new Audio('gomi_rescue_assets_audio/'+locale+'/voice-mode.wav');cue.preload='auto';audioCache['voice-mode']=cue}
+   active=cue;let done=false;const finishCue=()=>{if(done)return;done=true;if(active===cue)active=null;modeCuePlaying=false;const q=round[pos];if(enabled&&q&&!document.getElementById('play').classList.contains('hide'))playQuestionAndInstruction(q)};
+   cue.onended=finishCue;cue.onerror=finishCue;try{cue.currentTime=0;const p=cue.play();if(p&&p.catch)p.catch(finishCue)}catch(e){finishCue()}
+ }
+ let lastModeCueTriggerAt=0;
+ function announceListenButton(event){
+   if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+   const now=Date.now();if(now-lastModeCueTriggerAt<500)return;lastModeCueTriggerAt=now;playModeCue();
+ }
+ button.addEventListener('pointerenter',announceListenButton);
+ button.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceListenButton(event)});
+ button.addEventListener('focus',announceListenButton);
  function playOption(letter){
-   if(!enabled||!quizReady||locked)return;const now=Date.now();if(lastOption===letter&&now-lastOptionAt<350)return;lastOption=letter;lastOptionAt=now;stopVoice();
+   if(!enabled||modeCuePlaying||!quizReady||locked)return;const now=Date.now();if(lastOption===letter&&now-lastOptionAt<350)return;lastOption=letter;lastOptionAt=now;stopVoice();
    const id='option-'+letter;let a=audioCache[id];if(!a){a=new Audio('gomi_rescue_assets_audio/'+locale+'/'+id+'.wav');a.preload='auto';audioCache[id]=a}active=a;a.onended=()=>{if(active===a)active=null};a.onerror=a.onended;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(()=>{if(active===a)active=null})}catch(e){if(active===a)active=null}
  }
  function playInstruction(q,onEnd){
@@ -186,10 +201,11 @@ button,input,select,textarea{font-family:inherit}
  }
  const origStart=start,origDraw=draw,origAnswer=answer,origHud=hud;
  hud=function(){origHud();const time=document.getElementById('time');if(enabled){time.innerHTML='<img src="assets/listen-infinity.png" alt="" class="listen-infinity-icon">';time.setAttribute('aria-label','∞');time.classList.remove('warn')}};
- draw=function(){origDraw();const q=round[pos];quizReady=false;document.querySelectorAll('.answer').forEach((b,i)=>{const letter='ABCD'[i];b.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')playOption(letter)});b.addEventListener('focus',()=>playOption(letter));b.addEventListener('pointerdown',e=>{if(!enabled||e.pointerType!=='touch')return;if(!quizReady){b.dataset.touchBlockClick='1';return}if(b.dataset.touchPreviewed==='1'){b.dataset.touchPreviewed='0';b.dataset.touchConfirm='1'}else{b.dataset.touchPreviewed='1';b.dataset.touchPreviewPending='1';playOption(letter)}});b.addEventListener('click',e=>{if(b.dataset.touchBlockClick==='1'){b.dataset.touchBlockClick='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchPreviewPending==='1'){b.dataset.touchPreviewPending='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchConfirm==='1')b.dataset.touchConfirm='0'},true)});if(enabled&&q)playQuestionAndInstruction(q)};
+ draw=function(){origDraw();const q=round[pos];quizReady=false;document.querySelectorAll('.answer').forEach((b,i)=>{const letter='ABCD'[i];b.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')playOption(letter)});b.addEventListener('focus',()=>playOption(letter));b.addEventListener('pointerdown',e=>{if(!enabled||e.pointerType!=='touch')return;if(!quizReady){b.dataset.touchBlockClick='1';return}if(b.dataset.touchPreviewed==='1'){b.dataset.touchPreviewed='0';b.dataset.touchConfirm='1'}else{b.dataset.touchPreviewed='1';b.dataset.touchPreviewPending='1';playOption(letter)}});b.addEventListener('click',e=>{if(b.dataset.touchBlockClick==='1'){b.dataset.touchBlockClick='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchPreviewPending==='1'){b.dataset.touchPreviewPending='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchConfirm==='1')b.dataset.touchConfirm='0'},true)});if(enabled&&q&&!modeCuePlaying)playQuestionAndInstruction(q)};
  answer=function(e){const q=round[pos];origAnswer(e);if(enabled&&q)playClip('A',q,()=>{if(enabled)playClip('E',q)})};
- start=function(){stopVoice();origStart();if(enabled){clearInterval(tick);tick=null;hud()}};
- button.addEventListener('click',()=>{enabled=!enabled;button.classList.toggle('active',enabled);button.setAttribute('aria-pressed',String(enabled));if(enabled){clearInterval(tick);tick=null;hud();if(round[pos]&&document.getElementById('play').classList.contains('hide')===false){playQuestionAndInstruction(round[pos])}}else{stopVoice();if(!document.getElementById('play').classList.contains('hide')){clearInterval(tick);tick=setInterval(()=>{left--;hud();if(left<=0)finish()},1000)}hud()}});
+ start=function(){modeCuePlaying=false;stopVoice();origStart();if(enabled){clearInterval(tick);tick=null;hud()}};
+ document.getElementById('start').onclick=start;document.getElementById('retry').onclick=start;
+ button.addEventListener('click',()=>{enabled=!enabled;button.classList.toggle('active',enabled);button.setAttribute('aria-pressed',String(enabled));if(enabled){clearInterval(tick);tick=null;hud();playModeCue()}else{modeCuePlaying=false;stopVoice();if(!document.getElementById('play').classList.contains('hide')){clearInterval(tick);tick=setInterval(()=>{left--;hud();if(left<=0)finish()},1000)}hud()}});
 })();
 </script><style>
 #listen-mode-toggle{position:fixed!important;z-index:2147483647!important;right:12px!important;top:max(env(safe-area-inset-top),8px)!important;width:44px!important;height:44px!important;border:2px solid #7653c8!important;border-radius:50%!important;background:#fff!important;box-shadow:0 0 0 2px #28509a,0 3px 10px #0004!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;cursor:pointer!important;visibility:visible!important;opacity:1!important}
