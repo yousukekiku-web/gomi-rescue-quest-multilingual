@@ -152,6 +152,38 @@ let round=[],pos=0,point=0,left=60,tick,locked=false;const $=x=>document.getElem
 .answer.wrong::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 6.5l11 11M17.5 6.5l-11 11' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E")}
 button,input,select,textarea{font-family:inherit}
 </style>
+<script id="stage3-listen-mode">
+(()=>{
+ const locale='ko', extensions={'S3-Q-01':'.wav','S3-Q-02':'.wav','S3-Q-03':'.wav','S3-Q-04':'.wav','S3-Q-05':'.wav','S3-Q-06':'.wav','S3-Q-07':'.wav','S3-Q-08':'.wav','S3-Q-09':'.wav','S3-Q-10':'.wav','S3-Q-11':'.wav','S3-Q-12':'.wav','S3-Q-13':'.wav','S3-Q-14':'.wav','S3-Q-15':'.wav','S3-Q-16':'.wav','S3-Q-17':'.wav','S3-Q-18':'.wav','S3-Q-19':'.wav','S3-Q-20':'.wav','S3-Q-21':'.wav','S3-Q-22':'.wav','S3-Q-23':'.wav','S3-Q-24':'.wav','S3-Q-25':'.wav','S3-Q-26':'.wav','S3-Q-27':'.wav','S3-Q-28':'.wav','S3-Q-29':'.wav','S3-Q-30':'.wav','S3-A-01':'.wav','S3-A-02':'.wav','S3-A-03':'.wav','S3-A-04':'.wav','S3-A-05':'.wav','S3-A-06':'.wav','S3-A-07':'.wav','S3-A-08':'.wav','S3-A-09':'.wav','S3-A-10':'.wav','S3-A-11':'.wav','S3-A-12':'.wav','S3-A-13':'.wav','S3-A-14':'.wav','S3-A-15':'.wav','S3-A-16':'.wav','S3-A-17':'.wav','S3-A-18':'.wav','S3-A-19':'.wav','S3-A-20':'.wav','S3-A-21':'.wav','S3-A-22':'.wav','S3-A-23':'.wav','S3-A-24':'.wav','S3-A-25':'.wav','S3-A-26':'.wav','S3-A-27':'.wav','S3-A-28':'.wav','S3-A-29':'.wav','S3-A-30':'.wav','S3-E-01':'.wav','S3-E-02':'.wav','S3-E-03':'.wav','S3-E-04':'.wav','S3-E-05':'.wav','S3-E-06':'.wav','S3-E-07':'.wav','S3-E-08':'.wav','S3-E-09':'.wav','S3-E-10':'.wav','S3-E-11':'.wav','S3-E-12':'.wav','S3-E-13':'.wav','S3-E-14':'.wav','S3-E-15':'.wav','S3-E-16':'.wav','S3-E-17':'.wav','S3-E-18':'.wav','S3-E-19':'.wav','S3-E-20':'.wav','S3-E-21':'.wav','S3-E-22':'.wav','S3-E-23':'.wav','S3-E-24':'.wav','S3-E-25':'.wav','S3-E-26':'.wav','S3-E-27':'.wav','S3-E-28':'.wav','S3-E-29':'.wav','S3-E-30':'.wav'};
+ const app=document.getElementById('app');
+ const button=document.createElement('button');button.id='listen-mode-toggle';button.type='button';
+ button.setAttribute('aria-label','음성 듣기 모드 전환');button.title='음성 듣기 모드';button.setAttribute('aria-pressed','false');
+ button.innerHTML='<img src="assets/listen-ear.png" alt="" class="listen-ear-icon">';app.appendChild(button);
+ let enabled=false, active=null;
+ const audioCache={};
+ function stopVoice(){if(active){active.onended=null;active.onerror=null;active.pause();try{active.currentTime=0}catch(e){}active=null}}
+ function playClip(kind,q,onEnd){
+   const index=Q.indexOf(q)+1, id='S3-'+kind+'-'+String(index).padStart(2,'0'),ext=extensions[id];
+   if(!ext){if(onEnd)onEnd();return}
+   stopVoice();let a=audioCache[id];if(!a){a=new Audio('gomi_rescue_assets_audio/'+locale+'/'+id+ext);a.preload='auto';audioCache[id]=a}
+   active=a;let done=false;const finish=()=>{if(done)return;done=true;if(active===a)active=null;if(onEnd)onEnd()};
+   a.onended=finish;a.onerror=finish;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(finish)}catch(e){finish()}
+ }
+ const origStart=start,origDraw=draw,origAnswer=answer,origHud=hud;
+ hud=function(){origHud();const time=document.getElementById('time');if(enabled){time.innerHTML='<img src="assets/listen-infinity.png" alt="" class="listen-infinity-icon">';time.setAttribute('aria-label','∞');time.classList.remove('warn')}};
+ draw=function(){origDraw();if(enabled&&round[pos])playClip('Q',round[pos])};
+ answer=function(e){const q=round[pos];origAnswer(e);if(enabled&&q)playClip('A',q,()=>{if(enabled)playClip('E',q)})};
+ start=function(){stopVoice();origStart();if(enabled){clearInterval(tick);tick=null;hud()}};
+ button.addEventListener('click',()=>{enabled=!enabled;button.classList.toggle('active',enabled);button.setAttribute('aria-pressed',String(enabled));if(enabled){clearInterval(tick);tick=null;hud();if(round[pos]&&document.getElementById('play').classList.contains('hide')===false)playClip('Q',round[pos])}else{stopVoice();if(!document.getElementById('play').classList.contains('hide')){clearInterval(tick);tick=setInterval(()=>{left--;hud();if(left<=0)finish()},1000)}hud()}});
+})();
+</script><style>
+#listen-mode-toggle{position:absolute;z-index:30;right:10px;top:10px;width:44px;height:44px;border:2px solid #7653c8;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #28509a,0 3px 10px #0004;display:grid;place-items:center;padding:6px;cursor:pointer}
+#listen-mode-toggle.active{background:#eee5ff;box-shadow:0 0 0 3px #7653c866,0 3px 10px #0004}
+#listen-mode-toggle:focus-visible{outline:3px solid #17152b;outline-offset:3px}
+.listen-ear-icon{width:100%;height:100%;object-fit:contain}
+.listen-infinity-icon{display:block;width:28px;height:22px;object-fit:contain;margin:0 auto}
+#soundBtn{top:62px!important;right:10px!important}
+</style>
 <script id="stage3-a11y">
 (()=>{const box=document.getElementById('answers');if(!box)return;const label=()=>box.querySelectorAll('.answer').forEach((b,i)=>{b.setAttribute('aria-label',(i+1)+'문항 '+b.textContent.trim());b.setAttribute('aria-pressed',b.classList.contains('selected')?'true':'false')});new MutationObserver(label).observe(box,{childList:true,subtree:true});label();box.addEventListener('keydown',e=>{if(!e.target.matches('.answer'))return;const list=[...box.querySelectorAll('.answer:not(:disabled)')],i=list.indexOf(e.target);if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();list[(i+1)%list.length]?.focus()}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();list[(i+list.length-1)%list.length]?.focus()}})})();
 </script>
