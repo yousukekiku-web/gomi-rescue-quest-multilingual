@@ -154,14 +154,29 @@ button,input,select,textarea{font-family:inherit}
 </style>
 <script id="stage3-listen-mode">
 (()=>{
- const locale='en', extensions={'S3-Q-01':'.mp3','S3-Q-02':'.mp3','S3-Q-03':'.mp3','S3-Q-04':'.mp3','S3-Q-05':'.mp3','S3-Q-06':'.mp3','S3-Q-07':'.mp3','S3-Q-08':'.mp3','S3-Q-09':'.mp3','S3-Q-10':'.mp3','S3-Q-11':'.mp3','S3-Q-12':'.mp3','S3-Q-13':'.mp3','S3-Q-14':'.mp3','S3-Q-15':'.mp3','S3-Q-16':'.mp3','S3-Q-17':'.mp3','S3-Q-18':'.mp3','S3-Q-19':'.mp3','S3-Q-20':'.mp3','S3-Q-21':'.mp3','S3-Q-22':'.mp3','S3-Q-23':'.mp3','S3-Q-24':'.mp3','S3-Q-25':'.mp3','S3-Q-26':'.mp3','S3-Q-27':'.mp3','S3-Q-28':'.wav','S3-Q-29':'.wav','S3-Q-30':'.wav','S3-A-01':'.mp3','S3-A-02':'.mp3','S3-A-03':'.mp3','S3-A-04':'.mp3','S3-A-05':'.mp3','S3-A-06':'.mp3','S3-A-07':'.mp3','S3-A-08':'.mp3','S3-A-09':'.mp3','S3-A-10':'.mp3','S3-A-11':'.mp3','S3-A-12':'.mp3','S3-A-13':'.mp3','S3-A-14':'.mp3','S3-A-15':'.mp3','S3-A-16':'.mp3','S3-A-17':'.mp3','S3-A-18':'.mp3','S3-A-19':'.mp3','S3-A-20':'.mp3','S3-A-21':'.mp3','S3-A-22':'.mp3','S3-A-23':'.mp3','S3-A-24':'.mp3','S3-A-25':'.mp3','S3-A-26':'.mp3','S3-A-27':'.mp3','S3-A-28':'.mp3','S3-A-29':'.mp3','S3-A-30':'.mp3','S3-E-01':'.mp3','S3-E-02':'.mp3','S3-E-03':'.mp3','S3-E-04':'.mp3','S3-E-05':'.mp3','S3-E-06':'.mp3','S3-E-07':'.mp3','S3-E-08':'.mp3','S3-E-09':'.mp3','S3-E-10':'.mp3','S3-E-11':'.mp3','S3-E-12':'.mp3','S3-E-13':'.mp3','S3-E-14':'.mp3','S3-E-15':'.mp3','S3-E-16':'.mp3','S3-E-17':'.mp3','S3-E-18':'.mp3','S3-E-19':'.mp3','S3-E-20':'.mp3','S3-E-21':'.mp3','S3-E-22':'.mp3','S3-E-23':'.mp3','S3-E-24':'.mp3','S3-E-25':'.mp3','S3-E-26':'.mp3','S3-E-27':'.mp3','S3-E-28':'.mp3','S3-E-29':'.mp3','S3-E-30':'.mp3'};
+ const locale='en', extensions={'S3-Q-01':'.mp3','S3-Q-02':'.mp3','S3-Q-03':'.mp3','S3-Q-04':'.mp3','S3-Q-05':'.mp3','S3-Q-06':'.mp3','S3-Q-07':'.mp3','S3-Q-08':'.mp3','S3-Q-09':'.mp3','S3-Q-10':'.mp3','S3-Q-11':'.mp3','S3-Q-12':'.mp3','S3-Q-13':'.mp3','S3-Q-14':'.mp3','S3-Q-15':'.mp3','S3-Q-16':'.mp3','S3-Q-17':'.mp3','S3-Q-18':'.mp3','S3-Q-19':'.mp3','S3-Q-20':'.mp3','S3-Q-21':'.mp3','S3-Q-22':'.mp3','S3-Q-23':'.mp3','S3-Q-24':'.mp3','S3-Q-25':'.mp3','S3-Q-26':'.mp3','S3-Q-27':'.mp3','S3-Q-28':'.wav','S3-Q-29':'.wav','S3-Q-30':'.wav','S3-A-01':'.mp3','S3-A-02':'.mp3','S3-A-03':'.mp3','S3-A-04':'.mp3','S3-A-05':'.mp3','S3-A-06':'.mp3','S3-A-07':'.mp3','S3-A-08':'.mp3','S3-A-09':'.mp3','S3-A-10':'.mp3','S3-A-11':'.mp3','S3-A-12':'.mp3','S3-A-13':'.mp3','S3-A-14':'.mp3','S3-A-15':'.mp3','S3-A-16':'.mp3','S3-A-17':'.mp3','S3-A-18':'.mp3','S3-A-19':'.mp3','S3-A-20':'.mp3','S3-A-21':'.mp3','S3-A-22':'.mp3','S3-A-23':'.mp3','S3-A-24':'.mp3','S3-A-25':'.mp3','S3-A-26':'.mp3','S3-A-27':'.mp3','S3-A-28':'.mp3','S3-A-29':'.mp3','S3-A-30':'.mp3','S3-E-01':'.mp3','S3-E-02':'.mp3','S3-E-03':'.mp3','S3-E-04':'.mp3','S3-E-05':'.mp3','S3-E-06':'.mp3','S3-E-07':'.mp3','S3-E-08':'.mp3','S3-E-09':'.mp3','S3-E-10':'.mp3','S3-E-11':'.mp3','S3-E-12':'.mp3','S3-E-13':'.mp3','S3-E-14':'.mp3','S3-E-15':'.mp3','S3-E-16':'.mp3','S3-E-17':'.mp3','S3-E-18':'.mp3','S3-E-19':'.mp3','S3-E-20':'.mp3','S3-E-21':'.mp3','S3-E-22':'.mp3','S3-E-23':'.mp3','S3-E-24':'.mp3','S3-E-25':'.mp3','S3-E-26':'.mp3','S3-E-27':'.mp3','S3-E-28':'.mp3','S3-E-29':'.mp3','S3-E-30':'.mp3','S3-I-01':'.wav','S3-I-02':'.wav'};
  const app=document.getElementById('app');
  const button=document.createElement('button');button.id='listen-mode-toggle';button.type='button';
  button.setAttribute('aria-label','Toggle audio listening mode');button.title='Audio listening mode';button.setAttribute('aria-pressed','false');
  button.innerHTML='<img src="assets/listen-ear.png" alt="" class="listen-ear-icon">';app.appendChild(button);
- let enabled=false, active=null;
+ let enabled=false, active=null, quizReady=false, lastOption='', lastOptionAt=0;
+ const wrongQuestionNumbers=new Set([2,4,7,10,12,15,18,21,24]);
  const audioCache={};
  function stopVoice(){if(active){active.onended=null;active.onerror=null;active.pause();try{active.currentTime=0}catch(e){}active=null}}
+ function playOption(letter){
+   if(!enabled||!quizReady||locked)return;const now=Date.now();if(lastOption===letter&&now-lastOptionAt<350)return;lastOption=letter;lastOptionAt=now;stopVoice();
+   const id='option-'+letter;let a=audioCache[id];if(!a){a=new Audio('gomi_rescue_assets_audio/'+locale+'/'+id+'.wav');a.preload='auto';audioCache[id]=a}active=a;a.onended=()=>{if(active===a)active=null};a.onerror=a.onended;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(()=>{if(active===a)active=null})}catch(e){if(active===a)active=null}
+ }
+ function playInstruction(q,onEnd){
+   const n=Q.indexOf(q)+1,id='S3-I-'+(wrongQuestionNumbers.has(n)?'02':'01'),ext=extensions[id];
+   if(!ext){if(onEnd)onEnd();return}
+   stopVoice();let a=audioCache[id];if(!a){a=new Audio('gomi_rescue_assets_audio/'+locale+'/'+id+ext);a.preload='auto';audioCache[id]=a}
+   active=a;let done=false;const finish=()=>{if(done)return;done=true;if(active===a)active=null;if(onEnd)onEnd()};a.onended=finish;a.onerror=finish;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(finish)}catch(e){finish()}
+ }
+ function playQuestionAndInstruction(q){
+   if(!enabled||!q)return;quizReady=false;
+   playClip('Q',q,()=>{if(!enabled||round[pos]!==q||locked)return;playInstruction(q,()=>{if(enabled&&round[pos]===q&&!locked)quizReady=true})});
+ }
  function playClip(kind,q,onEnd){
    const index=Q.indexOf(q)+1, id='S3-'+kind+'-'+String(index).padStart(2,'0'),ext=extensions[id];
    if(!ext){if(onEnd)onEnd();return}
@@ -171,18 +186,18 @@ button,input,select,textarea{font-family:inherit}
  }
  const origStart=start,origDraw=draw,origAnswer=answer,origHud=hud;
  hud=function(){origHud();const time=document.getElementById('time');if(enabled){time.innerHTML='<img src="assets/listen-infinity.png" alt="" class="listen-infinity-icon">';time.setAttribute('aria-label','∞');time.classList.remove('warn')}};
- draw=function(){origDraw();if(enabled&&round[pos])playClip('Q',round[pos])};
+ draw=function(){origDraw();const q=round[pos];quizReady=false;document.querySelectorAll('.answer').forEach((b,i)=>{const letter='ABCD'[i];b.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')playOption(letter)});b.addEventListener('focus',()=>playOption(letter));b.addEventListener('pointerdown',e=>{if(!enabled||e.pointerType!=='touch')return;if(!quizReady){b.dataset.touchBlockClick='1';return}if(b.dataset.touchPreviewed==='1'){b.dataset.touchPreviewed='0';b.dataset.touchConfirm='1'}else{b.dataset.touchPreviewed='1';b.dataset.touchPreviewPending='1';playOption(letter)}});b.addEventListener('click',e=>{if(b.dataset.touchBlockClick==='1'){b.dataset.touchBlockClick='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchPreviewPending==='1'){b.dataset.touchPreviewPending='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchConfirm==='1')b.dataset.touchConfirm='0'},true)});if(enabled&&q)playQuestionAndInstruction(q)};
  answer=function(e){const q=round[pos];origAnswer(e);if(enabled&&q)playClip('A',q,()=>{if(enabled)playClip('E',q)})};
  start=function(){stopVoice();origStart();if(enabled){clearInterval(tick);tick=null;hud()}};
- button.addEventListener('click',()=>{enabled=!enabled;button.classList.toggle('active',enabled);button.setAttribute('aria-pressed',String(enabled));if(enabled){clearInterval(tick);tick=null;hud();if(round[pos]&&document.getElementById('play').classList.contains('hide')===false)playClip('Q',round[pos])}else{stopVoice();if(!document.getElementById('play').classList.contains('hide')){clearInterval(tick);tick=setInterval(()=>{left--;hud();if(left<=0)finish()},1000)}hud()}});
+ button.addEventListener('click',()=>{enabled=!enabled;button.classList.toggle('active',enabled);button.setAttribute('aria-pressed',String(enabled));if(enabled){clearInterval(tick);tick=null;hud();if(round[pos]&&document.getElementById('play').classList.contains('hide')===false){playQuestionAndInstruction(round[pos])}}else{stopVoice();if(!document.getElementById('play').classList.contains('hide')){clearInterval(tick);tick=setInterval(()=>{left--;hud();if(left<=0)finish()},1000)}hud()}});
 })();
 </script><style>
-#listen-mode-toggle{position:absolute;z-index:30;right:10px;top:10px;width:44px;height:44px;border:2px solid #7653c8;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #28509a,0 3px 10px #0004;display:grid;place-items:center;padding:6px;cursor:pointer}
+#listen-mode-toggle{position:fixed!important;z-index:2147483647!important;right:12px!important;top:max(env(safe-area-inset-top),8px)!important;width:44px!important;height:44px!important;border:2px solid #7653c8!important;border-radius:50%!important;background:#fff!important;box-shadow:0 0 0 2px #28509a,0 3px 10px #0004!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;cursor:pointer!important;visibility:visible!important;opacity:1!important}
 #listen-mode-toggle.active{background:#eee5ff;box-shadow:0 0 0 3px #7653c866,0 3px 10px #0004}
 #listen-mode-toggle:focus-visible{outline:3px solid #17152b;outline-offset:3px}
-.listen-ear-icon{width:100%;height:100%;object-fit:contain}
-.listen-infinity-icon{display:block;width:28px;height:22px;object-fit:contain;margin:0 auto}
-#soundBtn{top:62px!important;right:10px!important}
+.listen-ear-icon{display:block!important;width:25px!important;height:35px!important;object-fit:contain!important}
+.listen-infinity-icon{display:block;width:38px;height:20px;object-fit:contain;margin:0 auto}
+#soundBtn{position:fixed!important;top:calc(max(env(safe-area-inset-top),8px) + 50px)!important;right:12px!important;z-index:2147483646!important}
 </style>
 <script id="stage3-a11y">
 (()=>{const box=document.getElementById('answers');if(!box)return;const label=()=>box.querySelectorAll('.answer').forEach((b,i)=>{b.setAttribute('aria-label',(i+1)+'Question '+b.textContent.trim());b.setAttribute('aria-pressed',b.classList.contains('selected')?'true':'false')});new MutationObserver(label).observe(box,{childList:true,subtree:true});label();box.addEventListener('keydown',e=>{if(!e.target.matches('.answer'))return;const list=[...box.querySelectorAll('.answer:not(:disabled)')],i=list.indexOf(e.target);if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();list[(i+1)%list.length]?.focus()}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();list[(i+list.length-1)%list.length]?.focus()}})})();
