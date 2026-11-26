@@ -378,7 +378,7 @@ const stage2VoiceCache={};
 let stage2ActiveAudio=null;
 let stage2ActiveDone=null;
 let stage2ListenMode=false;
-let stage2StartPending=false;
+let stage2StartPending=false,stage2StartCuePlaying=false,stage2StartCueHeard=false,stage2StartCuePending=false,lastStage2StartCueTriggerAt=0;
 let stage2ModeCuePlaying=false;
 let lastTileVoiceId='';
 let lastTileVoiceAt=0;
@@ -685,8 +685,28 @@ function beginRound(){
   startStage2Clock();
 }
 
+function playStage2StartCue(){
+  if(stage2StartCuePlaying)return;
+  stage2StartCuePlaying=true;
+  playStage2Voice('S2-002',()=>{
+    stage2StartCuePlaying=false;stage2StartCueHeard=true;
+    if(stage2StartCuePending){stage2StartCuePending=false;stage2StartCueHeard=false;beginRound();}
+  });
+}
+function announceStage2Start(event){
+  if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+  const now=Date.now();if(now-lastStage2StartCueTriggerAt<500)return;lastStage2StartCueTriggerAt=now;playStage2StartCue();
+}
+['btn-start','btn-retry'].forEach(id=>{
+  const button=document.getElementById(id);if(!button)return;
+  button.addEventListener('pointerenter',announceStage2Start);
+  button.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceStage2Start(event)});
+  button.addEventListener('focus',announceStage2Start);
+});
 function startRound(){
   if(stage2StartPending)return;
+  if(stage2StartCuePlaying){stage2StartCuePending=true;return;}
+  if(stage2StartCueHeard){stage2StartCueHeard=false;beginRound();return;}
   if(stage2ListenMode){
     stage2StartPending=true;
     playStage2Voice('S2-002',()=>{stage2StartPending=false;beginRound();});

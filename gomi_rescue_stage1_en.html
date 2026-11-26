@@ -1689,18 +1689,34 @@ document.getElementById('bgm-toggle').addEventListener('click', toggleBGMMute);
 // ════════════════════════════════════════════════
 // START / RETRY
 // ════════════════════════════════════════════════
-document.getElementById('btn-start').addEventListener('click',()=>{
-  if(startInProgress) return;
+let stage1StartCuePlaying=false,stage1StartCueHeard=false,stage1StartCuePending=false,lastStage1StartCueTriggerAt=0;
+function beginStage1Game(){
   startInProgress=true;
-  const begin=()=>{
-    document.getElementById('scr-title').classList.add('hidden');
-    document.getElementById('scr-game').classList.remove('hidden');
-    startBGM();
-    resetGame();
-    spawnItem();
-    startTimer();
-  };
-  playVoice('S1-001',begin);
+  document.getElementById('scr-title').classList.add('hidden');
+  document.getElementById('scr-game').classList.remove('hidden');
+  startBGM();resetGame();spawnItem();startTimer();
+}
+function playStage1StartCue(){
+  if(stage1StartCuePlaying)return;
+  stage1StartCuePlaying=true;
+  playVoice('S1-001',()=>{
+    stage1StartCuePlaying=false;stage1StartCueHeard=true;
+    if(stage1StartCuePending){stage1StartCuePending=false;stage1StartCueHeard=false;beginStage1Game();}
+  });
+}
+function announceStage1Start(event){
+  if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+  const now=Date.now();if(now-lastStage1StartCueTriggerAt<500)return;lastStage1StartCueTriggerAt=now;playStage1StartCue();
+}
+const stage1StartButton=document.getElementById('btn-start');
+stage1StartButton.addEventListener('pointerenter',announceStage1Start);
+stage1StartButton.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceStage1Start(event)});
+stage1StartButton.addEventListener('focus',announceStage1Start);
+stage1StartButton.addEventListener('click',()=>{
+  if(startInProgress)return;
+  if(stage1StartCuePlaying){stage1StartCuePending=true;return;}
+  if(stage1StartCueHeard){stage1StartCueHeard=false;beginStage1Game();return;}
+  startInProgress=true;playVoice('S1-001',beginStage1Game);
 });
 document.getElementById('btn-retry').addEventListener('click',()=>{
   document.getElementById('scr-go').classList.add('hidden');

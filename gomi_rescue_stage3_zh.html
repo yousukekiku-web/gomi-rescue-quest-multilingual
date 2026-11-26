@@ -185,7 +185,7 @@ button,input,select,textarea{font-family:inherit}
  function bindUiCue(selector,id){
    let last=0;document.querySelectorAll(selector).forEach(el=>{const announce=e=>{if(e.type==='pointerenter'&&e.pointerType==='touch')return;const now=Date.now();if(now-last<500)return;last=now;playUiCue(id)};el.addEventListener('pointerenter',announce);el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')announce(e)});el.addEventListener('focus',announce);if(id==='home')el.addEventListener('click',e=>{const a=audioCache.home;if(!a||a.paused||a.ended)return;e.preventDefault();e.stopImmediatePropagation();let resumed=false;const resume=()=>{if(resumed)return;resumed=true;el.click()};a.addEventListener('ended',resume,{once:true});a.addEventListener('error',resume,{once:true})},true)});
  }
- bindUiCue('.home-link','home');bindUiCue('#btn-home','home');bindUiCue('#soundBtn','mute');
+ bindUiCue('.home-link','home');bindUiCue('#btn-home','home');bindUiCue('#soundBtn','mute');bindUiCue('#start','start');bindUiCue('#retry','start');
  function playOption(letter){
    if(!enabled||modeCuePlaying||!quizReady||locked)return;const now=Date.now();if(lastOption===letter&&now-lastOptionAt<350)return;lastOption=letter;lastOptionAt=now;stopVoice();
    const id='option-'+letter;let a=audioCache[id];if(!a){a=new Audio('gomi_rescue_assets_audio/'+locale+'/'+id+'.wav');a.preload='auto';audioCache[id]=a}active=a;a.onended=()=>{if(active===a)active=null};a.onerror=a.onended;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(()=>{if(active===a)active=null})}catch(e){if(active===a)active=null}
