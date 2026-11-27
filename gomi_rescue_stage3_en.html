@@ -176,7 +176,6 @@ button,input,select,textarea{font-family:inherit}
    const now=Date.now();if(now-lastModeCueTriggerAt<500)return;lastModeCueTriggerAt=now;playModeCue();
  }
  button.addEventListener('pointerenter',announceListenButton);
- button.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceListenButton(event)});
  button.addEventListener('focus',announceListenButton);
  function playUiCue(id){
    if((id==='start'||id==='next-question')&&!enabled)return;
@@ -185,7 +184,7 @@ button,input,select,textarea{font-family:inherit}
    stopVoice();active=a;let done=false;const finish=()=>{if(done)return;done=true;if(active===a)active=null};a.onended=finish;a.onerror=finish;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(finish)}catch(e){finish()}
  }
  function bindUiCue(selector,id){
-   let last=0;document.querySelectorAll(selector).forEach(el=>{const announce=e=>{if(e.type==='pointerenter'&&e.pointerType==='touch')return;const now=Date.now();if(now-last<500)return;last=now;playUiCue(id)};el.addEventListener('pointerenter',announce);el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')announce(e)});el.addEventListener('focus',announce);if(['home','start','next-question'].includes(id))el.addEventListener('click',e=>{const a=audioCache.home;if(!a||a.paused||a.ended)return;e.preventDefault();e.stopImmediatePropagation();let resumed=false;const resume=()=>{if(resumed)return;resumed=true;el.click()};a.addEventListener('ended',resume,{once:true});a.addEventListener('error',resume,{once:true})},true)});
+   let last=0;document.querySelectorAll(selector).forEach(el=>{const announce=e=>{if(e.type==='pointerenter'&&e.pointerType==='touch')return;const now=Date.now();if(now-last<500)return;last=now;playUiCue(id)};el.addEventListener('pointerenter',announce);el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')announce(e)});el.addEventListener('focus',announce);if(['home','start','next-question'].includes(id))el.addEventListener('click',e=>{const a=audioCache[id];if(!a||a.paused||a.ended)return;e.preventDefault();e.stopImmediatePropagation();let resumed=false;const resume=()=>{if(resumed)return;resumed=true;el.click()};a.addEventListener('ended',resume,{once:true});a.addEventListener('error',resume,{once:true})},true)});
  }
  bindUiCue('.home-link','home');bindUiCue('#btn-home','home');bindUiCue('#soundBtn','mute');bindUiCue('#start','start');bindUiCue('#retry','start');bindUiCue('#next','next-question');
  function playOption(letter){
@@ -213,7 +212,11 @@ button,input,select,textarea{font-family:inherit}
  hud=function(){origHud();const time=document.getElementById('time');if(enabled){time.innerHTML='<img src="assets/listen-infinity.png" alt="" class="listen-infinity-icon">';time.setAttribute('aria-label','∞');time.classList.remove('warn')}};
  draw=function(){origDraw();const q=round[pos];quizReady=false;document.querySelectorAll('.answer').forEach((b,i)=>{const letter='ABCD'[i];b.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')playOption(letter)});b.addEventListener('focus',()=>playOption(letter));b.addEventListener('pointerdown',e=>{if(!enabled||e.pointerType!=='touch')return;if(!quizReady){b.dataset.touchBlockClick='1';return}if(b.dataset.touchPreviewed==='1'){b.dataset.touchPreviewed='0';b.dataset.touchConfirm='1'}else{b.dataset.touchPreviewed='1';b.dataset.touchPreviewPending='1';playOption(letter)}});b.addEventListener('click',e=>{if(b.dataset.touchBlockClick==='1'){b.dataset.touchBlockClick='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchPreviewPending==='1'){b.dataset.touchPreviewPending='0';e.preventDefault();e.stopImmediatePropagation();return}if(b.dataset.touchConfirm==='1')b.dataset.touchConfirm='0'},true)});if(enabled&&q&&!modeCuePlaying)playQuestionAndInstruction(q)};
  answer=function(e){const q=round[pos];origAnswer(e);if(enabled&&q)playClip('A',q,()=>{if(enabled)playClip('E',q,()=>{if(enabled)playUiCue('next-question')})})};
- start=function(){modeCuePlaying=false;stopVoice();origStart();if(enabled){clearInterval(tick);tick=null;hud()}};
+ let startCuePending=false,startCueLaunchPending=false;
+ start=function(){
+   if(enabled){const cue=audioCache.start;if(cue&&!cue.paused&&!cue.ended){startCueLaunchPending=true;cue.addEventListener('ended',()=>{if(startCueLaunchPending){startCueLaunchPending=false;start()}},{once:true});cue.addEventListener('error',()=>{if(startCueLaunchPending){startCueLaunchPending=false;start()}},{once:true});return}}
+   modeCuePlaying=false;stopVoice();origStart();if(enabled){clearInterval(tick);tick=null;hud()}
+ };
  document.getElementById('start').onclick=start;document.getElementById('retry').onclick=start;
  button.addEventListener('click',()=>{enabled=!enabled;button.classList.toggle('active',enabled);button.setAttribute('aria-pressed',String(enabled));if(enabled){clearInterval(tick);tick=null;hud();playModeCue()}else{modeCuePlaying=false;stopVoice();if(!document.getElementById('play').classList.contains('hide')){clearInterval(tick);tick=setInterval(()=>{left--;hud();if(left<=0)finish()},1000)}hud()}});
 })();

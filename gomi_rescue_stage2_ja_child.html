@@ -432,7 +432,6 @@ function announceStage2ListenButton(event){
 }
 const stage2ListenButton=document.getElementById('listen-mode-toggle');
 stage2ListenButton.addEventListener('pointerenter',announceStage2ListenButton);
-stage2ListenButton.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceStage2ListenButton(event)});
 stage2ListenButton.addEventListener('focus',announceStage2ListenButton);
 function setStage2ListenMode(enabled){
   stage2ListenMode=!!enabled;

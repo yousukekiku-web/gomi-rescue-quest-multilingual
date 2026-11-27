@@ -1056,7 +1056,6 @@ function announceListenButton(event){
 }
 const listenButton=document.getElementById('listen-mode-toggle');
 listenButton.addEventListener('pointerenter',announceListenButton);
-listenButton.addEventListener('pointerdown',event=>{if(event.pointerType==='touch')announceListenButton(event)});
 listenButton.addEventListener('focus',announceListenButton);
 function setListenMode(enabled){
   listenMode=!!enabled;
