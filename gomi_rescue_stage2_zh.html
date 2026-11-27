@@ -686,7 +686,7 @@ function beginRound(){
 }
 
 function playStage2StartCue(){
-  if(stage2StartCuePlaying)return;
+  if(!stage2ListenMode||stage2StartCuePlaying)return;
   stage2StartCuePlaying=true;
   playStage2Voice('S2-002',()=>{
     stage2StartCuePlaying=false;stage2StartCueHeard=true;
@@ -694,6 +694,7 @@ function playStage2StartCue(){
   });
 }
 function announceStage2Start(event){
+  if(!stage2ListenMode)return;
   if(event.type==='pointerenter'&&event.pointerType==='touch')return;
   const now=Date.now();if(now-lastStage2StartCueTriggerAt<500)return;lastStage2StartCueTriggerAt=now;playStage2StartCue();
 }

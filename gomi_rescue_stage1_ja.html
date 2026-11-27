@@ -1135,6 +1135,7 @@ function renderQuizOptions(opts, onPick){
     btn.addEventListener('focus',()=>playOptionLetter(letter));
     btn.addEventListener('pointerdown',event=>{
       if(event.pointerType!=='touch'||!listenMode)return;
+      if(!quizOptionCuesReady){btn.dataset.touchPreviewed='0';btn.dataset.touchPreviewPending='1';return;}
       if(btn.dataset.touchPreviewed==='1'){
         btn.dataset.touchPreviewed='0';btn.dataset.touchConfirm='1';
       }else{
@@ -1342,6 +1343,7 @@ function triggerRecovery(){
     btn.addEventListener('focus',()=>playOptionLetter(letter));
     btn.addEventListener('pointerdown',event=>{
       if(event.pointerType!=='touch'||!listenMode)return;
+      if(!quizOptionCuesReady){btn.dataset.touchPreviewed='0';btn.dataset.touchPreviewPending='1';return;}
       if(btn.dataset.touchPreviewed==='1'){
         btn.dataset.touchPreviewed='0';btn.dataset.touchConfirm='1';
       }else{
@@ -1699,7 +1701,7 @@ function beginStage1Game(){
   startBGM();resetGame();spawnItem();startTimer();
 }
 function playStage1StartCue(){
-  if(stage1StartCuePlaying)return;
+  if(!listenMode||stage1StartCuePlaying)return;
   stage1StartCuePlaying=true;
   playVoice('S1-001',()=>{
     stage1StartCuePlaying=false;stage1StartCueHeard=true;
@@ -1707,7 +1709,9 @@ function playStage1StartCue(){
   });
 }
 function announceStage1Start(event){
+  if(!listenMode)return;
   if(event.type==='pointerenter'&&event.pointerType==='touch')return;
+  if(event.type==='pointerdown')startBGM();
   const now=Date.now();if(now-lastStage1StartCueTriggerAt<500)return;lastStage1StartCueTriggerAt=now;playStage1StartCue();
 }
 const stage1StartButton=document.getElementById('btn-start');
@@ -1716,10 +1720,11 @@ stage1StartButton.addEventListener('pointerdown',event=>{if(event.pointerType===
 stage1StartButton.addEventListener('focus',announceStage1Start);
 stage1StartButton.addEventListener('click',()=>{
   if(startInProgress)return;
+  if(!listenMode){beginStage1Game();return;}
   if(stage1StartCuePlaying){stage1StartCuePending=true;return;}
   if(stage1StartCueHeard){stage1StartCueHeard=false;beginStage1Game();return;}
-  if(startInProgress)return;startInProgress=true;
-  playVoice('S1-001',beginStage1Game);
+  startInProgress=true;startBGM();stage1StartCuePlaying=true;
+  playVoice('S1-001',()=>{stage1StartCuePlaying=false;beginStage1Game();});
 });
 document.getElementById('btn-retry').addEventListener('click',()=>{
   document.getElementById('scr-go').classList.add('hidden');
