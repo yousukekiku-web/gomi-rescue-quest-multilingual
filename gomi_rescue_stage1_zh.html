@@ -918,7 +918,7 @@ function spawnItem(){
     }
     document.getElementById('item-emoji').innerHTML = currentItem.emoji;
     document.getElementById('item-name').textContent = currentItem.name;
-    playVoice(itemVoiceKey(currentItem));
+    if(listenMode)playVoice(itemVoiceKey(currentItem));
     sortLocked=false;
     card.style.transition='transform .18s cubic-bezier(.34,1.56,.64,1)';
     card.style.transform='scale(1)';
@@ -936,7 +936,7 @@ function handleSort(binKey){
 
   if(currentIsDanger){
     dangerTotal++;
-    playVoice(BIN_VOICE_KEY.wait);
+    if(listenMode)playVoice(BIN_VOICE_KEY.wait);
     if(binKey==='wait'){
       dangerFound++;
       score += 200;
@@ -950,7 +950,7 @@ function handleSort(binKey){
       triggerAccidentCutin();
     }
   } else {
-    playVoice(BIN_VOICE_KEY[currentItem.bin]);
+    if(listenMode)playVoice(BIN_VOICE_KEY[currentItem.bin]);
     if(binKey===currentItem.bin){
       correctCount++;
       combo++;
@@ -1031,7 +1031,7 @@ let lastSortCue='';
 let lastSortCueAt=0;
 function playSortCategoryCue(binKey){
   // Sorting labels remain available even when quiz narration is disabled.
-  if(voiceModeCuePlaying || !BIN_VOICE_KEY[binKey]) return;
+  if(!listenMode || voiceModeCuePlaying || !BIN_VOICE_KEY[binKey]) return;
   const now=Date.now();
   // Pointer entry and keyboard focus may occur together; avoid duplicate playback.
   if(lastSortCue===binKey && now-lastSortCueAt<350) return;
@@ -1473,7 +1473,7 @@ function calcRank(accuracy, score){
 document.getElementById('bin-fire').addEventListener('click',()=>handleSort('fire'));
 document.getElementById('bin-nonburn').addEventListener('click',()=>handleSort('nonburn'));
 document.getElementById('bin-resource').addEventListener('click',()=>handleSort('resource'));
-document.getElementById('bin-wait').addEventListener('click',()=>handleSort('wait'));
+document.getElementById('bin-wait').addEventListener('click',()=>{if(!listenMode&&gameActive&&!sortLocked&&currentItem)playVoice(BIN_VOICE_KEY.wait);handleSort('wait');});
 
 ['fire','nonburn','resource','wait'].forEach(binKey=>{
   const button=document.getElementById(`bin-${binKey}`);
@@ -1481,7 +1481,7 @@ document.getElementById('bin-wait').addEventListener('click',()=>handleSort('wai
   button.addEventListener('mouseover',()=>playSortCategoryCue(binKey));
   button.addEventListener('focus',()=>playSortCategoryCue(binKey));
   button.addEventListener('pointerdown',event=>{
-    if(event.pointerType!=='touch')return;
+    if(event.pointerType!=='touch'||!listenMode)return;
     if(button.dataset.touchPreviewed==='1'){
       button.dataset.touchPreviewed='0';button.dataset.touchConfirm='1';
     }else{
@@ -1489,6 +1489,7 @@ document.getElementById('bin-wait').addEventListener('click',()=>handleSort('wai
     }
   });
   button.addEventListener('click',event=>{
+    if(!listenMode)return;
     if(button.dataset.touchPreviewPending==='1'){
       button.dataset.touchPreviewPending='0';event.preventDefault();event.stopImmediatePropagation();return;
     }
